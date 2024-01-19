@@ -1,7 +1,7 @@
 use futures::{SinkExt as _, StreamExt as _};
 use stacklover::stacklover;
 use std::mem::{size_of, MaybeUninit};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 #[test]
 fn it_works() {
@@ -35,6 +35,38 @@ fn it_works() {
         iter.into_inner().into_iter().collect::<Vec<i32>>(),
         vec![4, 6, 10, 200]
     );
+}
+
+#[test]
+fn drops() {
+    let dropped_count = Arc::new(Mutex::new(0));
+    struct MyStruct {
+        dropped: Arc<Mutex<u32>>,
+    }
+    impl Drop for MyStruct {
+        fn drop(&mut self) {
+            *self.dropped.lock().unwrap() += 1;
+        }
+    }
+
+    stacklover! {
+        MyStructStruct,
+        fn (dropped: Arc<Mutex<u32>>) -> MyStruct {
+            MyStruct{dropped}
+        }
+    }
+
+    {
+        let s = MyStructStruct::new(dropped_count.clone());
+        assert_eq!(*dropped_count.lock().unwrap(), 0);
+        let _ = s;
+    }
+    assert_eq!(*dropped_count.lock().unwrap(), 1);
+    {
+        let _ = MyStructStruct::new(dropped_count.clone());
+        assert_eq!(*dropped_count.lock().unwrap(), 2);
+    }
+    assert_eq!(*dropped_count.lock().unwrap(), 2);
 }
 
 #[tokio::test]

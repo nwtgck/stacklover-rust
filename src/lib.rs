@@ -85,7 +85,7 @@ macro_rules! stacklover {
 
                 #[inline(always)]
                 fn into_inner(self) -> $return_type {
-                    if true {
+                    let inner = if true {
                         unsafe { ::core::mem::transmute(self.inner) }
                     } else {
                         fn assert_send_sync_unpin<T: Send + Sync + Unpin>(x: T) -> T {
@@ -93,11 +93,23 @@ macro_rules! stacklover {
                         }
                         #[allow(unreachable_code)]
                         assert_send_sync_unpin(Self::create_unreachable())
-                    }
+                    };
+                    ::core::mem::forget(self);
+                    inner
+                }
+            }
+
+            impl Drop for [<__Stacklover $struct_name>] {
+                fn drop(&mut self) {
+                    let _ = if true {
+                        unsafe { ::core::mem::transmute(self.inner) }
+                    } else {
+                        #[allow(unreachable_code)]
+                        Self::create_unreachable()
+                    };
                 }
             }
         }
-        // TODO: impl Drop
     };
     // async create
     ($struct_name:ident, $async:ident fn ( $( $param:ident: $param_ty:ty ),* ) -> $return_type:ty { $($body:tt)* }) => {
@@ -187,7 +199,7 @@ macro_rules! stacklover {
 
                #[inline(always)]
                fn into_inner(self) -> $return_type {
-                   if true {
+                   let inner = if true {
                        unsafe { ::core::mem::transmute(self.inner) }
                    } else {
                        fn assert_send_sync_unpin<T: Send + Sync + Unpin>(x: T) -> T {
@@ -195,11 +207,23 @@ macro_rules! stacklover {
                        }
                        #[allow(unreachable_code)]
                        assert_send_sync_unpin(Self::create_unreachable())
-                   }
+                   };
+                   ::core::mem::forget(self);
+                   inner
                }
             }
+
+            impl Drop for [<__Stacklover $struct_name>] {
+                fn drop(&mut self) {
+                    let _ = if true {
+                        unsafe { ::core::mem::transmute(self.inner) }
+                    } else {
+                        #[allow(unreachable_code)]
+                        Self::create_unreachable()
+                    };
+                }
+            }
         }
-        // TODO: impl Drop
     };
 }
 
