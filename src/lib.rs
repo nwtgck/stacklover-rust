@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! stacklover {
     // not async create
-    ($struct_name:ident, $n:expr, fn ( $( $param:ident: $param_ty:ty ),* ) -> $return_type:ty { $($body:tt)* }) => {
+    ($struct_name:ident, fn ( $( $param:ident: $param_ty:ty ),* ) -> $return_type:ty { $($body:tt)* }) => {
         $crate::private_mod::paste! {
             struct $struct_name {
                 __private: [<__Stacklover $struct_name>]
@@ -13,7 +13,7 @@ macro_rules! stacklover {
                     Self {
                         __private: [<__Stacklover $struct_name>] {
                             inner: unsafe {
-                                ::core::mem::transmute::<_, [u8; $n]>([<__Stacklover $struct_name>]::create( $($param),* ))
+                                ::core::mem::transmute([<__Stacklover $struct_name>]::create( $($param),* ))
                             },
                         },
                     }
@@ -25,10 +25,21 @@ macro_rules! stacklover {
             }
 
             struct [<__Stacklover $struct_name>] {
-                inner: [u8; $n],
+                inner: [u8; [<__Stacklover $struct_name>]::SIZE],
             }
 
             impl [<__Stacklover $struct_name>] {
+                const SIZE: usize = {
+                    #[allow(non_camel_case_types)]
+                    const fn return_value<$([<P_ $param>]),*, R>(_: &(impl ::core::ops::Fn($([<P_ $param>]),*) -> R)) -> R {
+                        unsafe { ::core::mem::MaybeUninit::uninit().assume_init() }
+                    }
+                    const fn size_of_val<T>(_: &T) -> usize {
+                        ::core::mem::size_of::<T>()
+                    }
+                    size_of_val(&::core::mem::ManuallyDrop::new(return_value(&Self::create)))
+                };
+
                 #[inline(always)]
                 fn create( $($param: $param_ty ),* ) -> $return_type {
                     $($body)*
@@ -50,7 +61,7 @@ macro_rules! stacklover {
         }
     };
     // async create
-    ($struct_name:ident, $n:expr, $async:ident fn ( $( $param:ident: $param_ty:ty ),* ) -> $return_type:ty { $($body:tt)* }) => {
+    ($struct_name:ident, $async:ident fn ( $( $param:ident: $param_ty:ty ),* ) -> $return_type:ty { $($body:tt)* }) => {
         $crate::private_mod::paste! {
             struct $struct_name {
                 __private: [<__Stacklover $struct_name>]
@@ -62,7 +73,7 @@ macro_rules! stacklover {
                     Self {
                         __private: [<__Stacklover $struct_name>] {
                             inner: unsafe {
-                                ::core::mem::transmute::<_, [u8; $n]>([<__Stacklover $struct_name>]::create( $($param),* ).await)
+                                ::core::mem::transmute([<__Stacklover $struct_name>]::create( $($param),* ).await)
                             },
                         },
                     }
@@ -74,10 +85,21 @@ macro_rules! stacklover {
             }
 
             struct [<__Stacklover $struct_name>] {
-                inner: [u8; $n],
+                inner: [u8; [<__Stacklover $struct_name>]::SIZE],
             }
 
             impl [<__Stacklover $struct_name>] {
+                const SIZE: usize = {
+                    #[allow(non_camel_case_types)]
+                    const fn async_return_value<$([<P_ $param>]),*, R, Fut: ::core::future::Future<Output = R>>(_: &(impl ::core::ops::Fn($([<P_ $param>]),*) -> Fut)) -> R {
+                        unsafe { ::core::mem::MaybeUninit::uninit().assume_init() }
+                    }
+                    const fn size_of_val<T>(_: &T) -> usize {
+                        ::core::mem::size_of::<T>()
+                    }
+                    size_of_val(&::core::mem::ManuallyDrop::new(async_return_value(&Self::create)))
+                };
+
                 #[inline(always)]
                 $async fn create( $($param: $param_ty ),* ) -> $return_type {
                     $($body)*
