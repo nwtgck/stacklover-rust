@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! stacklover {
     // not async create
-    ($struct_name:ident, $n:expr, ( $($param:ident: $param_ty:ty )* ) -> $return_type:ty { $($body:tt)* }) => {
+    ($struct_name:ident, $n:expr, fn ( $( $param:ident: $param_ty:ty ),* ) -> $return_type:ty { $($body:tt)* }) => {
         $crate::private_mod::paste! {
             struct $struct_name {
                 __private: [<__Stacklover $struct_name>]
@@ -9,11 +9,11 @@ macro_rules! stacklover {
 
             impl $struct_name {
                 #[inline(always)]
-                pub fn new( $($param: $param_ty )* ) -> Self {
+                pub fn new( $($param: $param_ty ),* ) -> Self {
                     Self {
                         __private: [<__Stacklover $struct_name>] {
                             inner: unsafe {
-                                ::core::mem::transmute::<_, [u8; $n]>([<__Stacklover $struct_name>]::create( $($param)* ))
+                                ::core::mem::transmute::<_, [u8; $n]>([<__Stacklover $struct_name>]::create( $($param),* ))
                             },
                         },
                     }
@@ -30,7 +30,7 @@ macro_rules! stacklover {
 
             impl [<__Stacklover $struct_name>] {
                 #[inline(always)]
-                fn create( $($param: $param_ty )* ) -> $return_type {
+                fn create( $($param: $param_ty ),* ) -> $return_type {
                     $($body)*
                 }
 
@@ -43,15 +43,14 @@ macro_rules! stacklover {
                             x
                         }
                         #[allow(unreachable_code)]
-                        // TODO: repeat unreachable!()
-                        assert_send_sync_unpin(Self::create(unreachable!()))
+                        assert_send_sync_unpin(Self::create( $( $crate::__ident_to_unreachable!($param) ),* ))
                     }
                 }
             }
         }
     };
     // async create
-    ($struct_name:ident, $n:expr, $async:ident ( $($param:ident: $param_ty:ty )* ) -> $return_type:ty { $($body:tt)* }) => {
+    ($struct_name:ident, $n:expr, $async:ident fn ( $( $param:ident: $param_ty:ty ),* ) -> $return_type:ty { $($body:tt)* }) => {
         $crate::private_mod::paste! {
             struct $struct_name {
                 __private: [<__Stacklover $struct_name>]
@@ -59,11 +58,11 @@ macro_rules! stacklover {
 
             impl $struct_name {
                 #[inline(always)]
-                pub $async fn new( $($param: $param_ty )* ) -> Self {
+                pub $async fn new( $($param: $param_ty ),* ) -> Self {
                     Self {
                         __private: [<__Stacklover $struct_name>] {
                             inner: unsafe {
-                                ::core::mem::transmute::<_, [u8; $n]>([<__Stacklover $struct_name>]::create( $($param)* ).await)
+                                ::core::mem::transmute::<_, [u8; $n]>([<__Stacklover $struct_name>]::create( $($param),* ).await)
                             },
                         },
                     }
@@ -80,7 +79,7 @@ macro_rules! stacklover {
 
             impl [<__Stacklover $struct_name>] {
                 #[inline(always)]
-                $async fn create( $($param: $param_ty )* ) -> $return_type {
+                $async fn create( $($param: $param_ty ),* ) -> $return_type {
                     $($body)*
                 }
 
@@ -96,13 +95,17 @@ macro_rules! stacklover {
                             unreachable!()
                         }
                         #[allow(unreachable_code)]
-                        // TODO: repeat unreachable!()
-                        assert_send_sync_unpin(wrap_future(Self::create(unreachable!())))
+                        assert_send_sync_unpin(wrap_future(Self::create( $( $crate::__ident_to_unreachable!($param) ),* )))
                     }
                 }
             }
         }
     };
+}
+
+#[macro_export]
+macro_rules! __ident_to_unreachable {
+    ( $x:ident ) => { unreachable!() };
 }
 
 pub mod private_mod {
