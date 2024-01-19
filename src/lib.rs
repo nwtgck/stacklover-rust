@@ -31,13 +31,10 @@ macro_rules! stacklover {
             impl [<__Stacklover $struct_name>] {
                 const SIZE: usize = {
                     #[allow(non_camel_case_types)]
-                    const fn return_value<$([<P_ $param>]),*, R>(_: &(impl ::core::ops::Fn($([<P_ $param>]),*) -> R)) -> R {
-                        unsafe { ::core::mem::MaybeUninit::uninit().assume_init() }
+                    const fn size_of_return_value<$([<P_ $param>]),*, R>(_: &(impl ::core::ops::Fn($([<P_ $param>]),*) -> R)) -> usize {
+                        ::core::mem::size_of::<R>()
                     }
-                    const fn size_of_val<T>(_: &T) -> usize {
-                        ::core::mem::size_of::<T>()
-                    }
-                    size_of_val(&::core::mem::ManuallyDrop::new(return_value(&Self::create)))
+                    size_of_return_value(&Self::create)
                 };
 
                 #[inline(always)]
@@ -91,13 +88,10 @@ macro_rules! stacklover {
             impl [<__Stacklover $struct_name>] {
                 const SIZE: usize = {
                     #[allow(non_camel_case_types)]
-                    const fn async_return_value<$([<P_ $param>]),*, R, Fut: ::core::future::Future<Output = R>>(_: &(impl ::core::ops::Fn($([<P_ $param>]),*) -> Fut)) -> R {
-                        unsafe { ::core::mem::MaybeUninit::uninit().assume_init() }
+                    const fn size_of_async_return_value<$([<P_ $param>]),*, R, Fut: ::core::future::Future<Output = R>>(_: &(impl ::core::ops::Fn($([<P_ $param>]),*) -> Fut)) -> usize {
+                        ::core::mem::size_of::<R>()
                     }
-                    const fn size_of_val<T>(_: &T) -> usize {
-                        ::core::mem::size_of::<T>()
-                    }
-                    size_of_val(&::core::mem::ManuallyDrop::new(async_return_value(&Self::create)))
+                    size_of_async_return_value(&Self::create)
                 };
 
                 #[inline(always)]

@@ -1,6 +1,7 @@
 use futures::{SinkExt as _, StreamExt as _};
 use stacklover::stacklover;
 use std::mem::{size_of, MaybeUninit};
+use std::sync::Arc;
 
 #[test]
 fn it_works() {
@@ -35,7 +36,26 @@ fn it_works() {
 }
 
 #[tokio::test]
-async fn works_with_async() {
+async fn it_works_with_arc() {
+    // Using Arc caused the error below in some implementation
+    // error[E0080]: evaluation of constant value failed
+    // using uninitialized data, but this operation requires initialized memory
+    stacklover! {
+        MyArc1,
+        fn (dep1: &str) -> Arc<String> {
+            Arc::new(dep1.to_owned())
+        }
+    }
+    stacklover! {
+        MyArc2,
+        async fn (dep1: &str) -> Arc<String> {
+            Arc::new(dep1.to_owned())
+        }
+    }
+}
+
+#[tokio::test]
+async fn it_works_with_async() {
     stacklover! {
         Iterator2,
         async fn (dep1: &'static str, dep2: i32) -> impl Iterator<Item=i32> {
