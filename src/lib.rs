@@ -19,8 +19,16 @@ macro_rules! stacklover {
                     }
                 }
 
-                pub fn into_entity(self) -> $return_type {
-                    self.__private.entity()
+                pub fn as_ref(&self) -> &($return_type) {
+                    self.__private.as_ref()
+                }
+
+                pub fn as_mut(&mut self) -> &mut ($return_type) {
+                    self.__private.as_mut()
+                }
+
+                pub fn into_inner(self) -> $return_type {
+                    self.__private.into_inner()
                 }
             }
 
@@ -42,8 +50,41 @@ macro_rules! stacklover {
                     $($body)*
                 }
 
+                fn create_unreachable() -> $return_type {
+                    #[allow(unreachable_code)]
+                    Self::create( $( $crate::__ident_to_unreachable!($param) ),* )
+                }
+
                 #[inline(always)]
-                fn entity(&self) -> $return_type {
+                fn as_ref(&self) -> &($return_type) {
+                    if true {
+                        unsafe { ::core::mem::transmute(&self.inner) }
+                    } else {
+                        // _self for lifetime
+                        fn ref_unreachable<S, T>(_self: &S, _: T) -> &T {
+                            unreachable!()
+                        }
+                        #[allow(unreachable_code)]
+                        ref_unreachable(self, Self::create_unreachable())
+                    }
+                }
+
+                #[inline(always)]
+                fn as_mut(&mut self) -> &mut ($return_type) {
+                    if true {
+                        unsafe { ::core::mem::transmute(&mut self.inner) }
+                    } else {
+                        // _self for lifetime
+                        fn mut_unreachable<S, T>(_self: &S, _: T) -> &mut T {
+                            unreachable!()
+                        }
+                        #[allow(unreachable_code)]
+                        mut_unreachable(self, Self::create_unreachable())
+                    }
+                }
+
+                #[inline(always)]
+                fn into_inner(self) -> $return_type {
                     if true {
                         unsafe { ::core::mem::transmute(self.inner) }
                     } else {
@@ -51,11 +92,12 @@ macro_rules! stacklover {
                             x
                         }
                         #[allow(unreachable_code)]
-                        assert_send_sync_unpin(Self::create( $( $crate::__ident_to_unreachable!($param) ),* ))
+                        assert_send_sync_unpin(Self::create_unreachable())
                     }
                 }
             }
         }
+        // TODO: impl Drop
     };
     // async create
     ($struct_name:ident, $async:ident fn ( $( $param:ident: $param_ty:ty ),* ) -> $return_type:ty { $($body:tt)* }) => {
@@ -76,8 +118,16 @@ macro_rules! stacklover {
                     }
                 }
 
-                pub fn into_entity(self) -> $return_type {
-                    self.__private.entity()
+                pub fn as_ref(&self) -> &($return_type) {
+                    self.__private.as_ref()
+                }
+
+                pub fn as_mut(&mut self) -> &mut ($return_type) {
+                    self.__private.as_mut()
+                }
+
+                pub fn into_inner(self) -> $return_type {
+                    self.__private.into_inner()
                 }
             }
 
@@ -99,23 +149,57 @@ macro_rules! stacklover {
                     $($body)*
                 }
 
-                #[inline(always)]
-                fn entity(&self) -> $return_type {
+               fn create_unreachable() -> $return_type {
+                    fn wrap_future<T: core::future::Future<Output = O>, O>(_: T) -> O {
+                        unreachable!()
+                    }
+                    #[allow(unreachable_code)]
+                    wrap_future(Self::create( $( $crate::__ident_to_unreachable!($param) ),* ))
+               }
+
+               #[inline(always)]
+                fn as_ref(&self) -> &($return_type) {
                     if true {
-                        unsafe { ::core::mem::transmute(self.inner) }
+                        unsafe { ::core::mem::transmute(&self.inner) }
                     } else {
-                        fn assert_send_sync_unpin<T: Send + Sync + Unpin>(x: T) -> T {
-                            x
-                        }
-                        fn wrap_future<T: core::future::Future<Output = O>, O>(_: T) -> O {
+                        // _self for lifetime
+                        fn ref_unreachable<S, T>(_self: &S, _: T) -> &T {
                             unreachable!()
                         }
                         #[allow(unreachable_code)]
-                        assert_send_sync_unpin(wrap_future(Self::create( $( $crate::__ident_to_unreachable!($param) ),* )))
+                        ref_unreachable(self, Self::create_unreachable())
                     }
                 }
+
+                #[inline(always)]
+                fn as_mut(&mut self) -> &mut ($return_type) {
+                    if true {
+                        unsafe { ::core::mem::transmute(&mut self.inner) }
+                    } else {
+                        // _self for lifetime
+                        fn mut_unreachable<S, T>(_self: &S, _: T) -> &mut T {
+                            unreachable!()
+                        }
+                        #[allow(unreachable_code)]
+                        mut_unreachable(self, Self::create_unreachable())
+                    }
+                }
+
+               #[inline(always)]
+               fn into_inner(self) -> $return_type {
+                   if true {
+                       unsafe { ::core::mem::transmute(self.inner) }
+                   } else {
+                       fn assert_send_sync_unpin<T: Send + Sync + Unpin>(x: T) -> T {
+                           x
+                       }
+                       #[allow(unreachable_code)]
+                       assert_send_sync_unpin(Self::create_unreachable())
+                   }
+               }
             }
         }
+        // TODO: impl Drop
     };
 }
 

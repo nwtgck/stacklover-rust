@@ -28,10 +28,12 @@ fn it_works() {
         tx.send(iter).unwrap();
     });
 
-    let iter = rx.recv().unwrap().into_entity();
+    let mut iter = rx.recv().unwrap();
+    assert_eq!(iter.as_ref().size_hint(), (5, Some(5)));
+    assert_eq!(iter.as_mut().next(), Some(2));
     assert_eq!(
-        iter.into_iter().collect::<Vec<i32>>(),
-        vec![2, 4, 6, 10, 200]
+        iter.into_inner().into_iter().collect::<Vec<i32>>(),
+        vec![4, 6, 10, 200]
     );
 }
 
@@ -79,10 +81,12 @@ async fn it_works_with_async() {
         tx.send(iter).await.unwrap();
     });
 
-    let iter = rx.next().await.unwrap().into_entity();
+    let mut iter = rx.next().await.unwrap();
+    assert_eq!(iter.as_ref().size_hint(), (5, Some(5)));
+    assert_eq!(iter.as_mut().next(), Some(2));
     assert_eq!(
-        iter.into_iter().collect::<Vec<i32>>(),
-        vec![2, 4, 6, 10, 200]
+        iter.into_inner().into_iter().collect::<Vec<i32>>(),
+        vec![4, 6, 10, 200]
     );
 }
 
