@@ -88,11 +88,13 @@ macro_rules! stacklover {
                     let inner = if true {
                         unsafe { ::core::mem::transmute(self.inner) }
                     } else {
-                        fn assert_send_sync_unpin<T: Send + Sync + Unpin>(x: T) -> T {
+                        // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
+                        // TODO: allow user to specify traits
+                        fn assert_traits<T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe>(x: T) -> T {
                             x
                         }
                         #[allow(unreachable_code)]
-                        assert_send_sync_unpin(Self::create_unreachable())
+                        assert_traits(Self::create_unreachable())
                     };
                     ::core::mem::forget(self);
                     inner
@@ -202,11 +204,13 @@ macro_rules! stacklover {
                    let inner = if true {
                        unsafe { ::core::mem::transmute(self.inner) }
                    } else {
-                       fn assert_send_sync_unpin<T: Send + Sync + Unpin>(x: T) -> T {
-                           x
-                       }
+                       // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
+                        // TODO: allow user to specify traits
+                        fn assert_traits<T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe>(x: T) -> T {
+                            x
+                        }
                        #[allow(unreachable_code)]
-                       assert_send_sync_unpin(Self::create_unreachable())
+                       assert_traits(Self::create_unreachable())
                    };
                    ::core::mem::forget(self);
                    inner
