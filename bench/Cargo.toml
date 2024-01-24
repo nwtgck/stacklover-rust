@@ -1,0 +1,11 @@
+[package]
+name = "stacklover-bench"
+edition = "2021"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+stacklover = { path = ".." }
+
+[[bench]]
+name = "iter_benchmark"
+harness = false
