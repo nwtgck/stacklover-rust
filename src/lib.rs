@@ -9,7 +9,7 @@ macro_rules! stacklover {
 
             impl $struct_name {
                 #[inline(always)]
-                pub fn new( $($param: $param_ty ),* ) -> Self {
+                pub fn new( $( $param: $param_ty ),* ) -> Self {
                     Self {
                         __private: [<__Stacklover $struct_name>] {
                             inner: unsafe {
@@ -39,7 +39,7 @@ macro_rules! stacklover {
             impl [<__Stacklover $struct_name>] {
                 const SIZE: usize = {
                     #[allow(non_camel_case_types)]
-                    const fn size_of_return_value<$([<P_ $param>]),*, R>(_: &(impl ::core::ops::Fn($([<P_ $param>]),*) -> R)) -> usize {
+                    const fn size_of_return_value<$([<P_ $param>],)* R>(_: &(impl ::core::ops::Fn($([<P_ $param>]),*) -> R)) -> usize {
                         ::core::mem::size_of::<R>()
                     }
                     size_of_return_value(&Self::create)
@@ -152,7 +152,7 @@ macro_rules! stacklover {
             impl [<__Stacklover $struct_name>] {
                 const SIZE: usize = {
                     #[allow(non_camel_case_types)]
-                    const fn size_of_async_return_value<$([<P_ $param>]),*, R, Fut: ::core::future::Future<Output = R>>(_: &(impl ::core::ops::Fn($([<P_ $param>]),*) -> Fut)) -> usize {
+                    const fn size_of_async_return_value<$([<P_ $param>],)* R, Fut: ::core::future::Future<Output = R>>(_: &(impl ::core::ops::Fn($([<P_ $param>]),*) -> Fut)) -> usize {
                         ::core::mem::size_of::<R>()
                     }
                     size_of_async_return_value(&Self::create)

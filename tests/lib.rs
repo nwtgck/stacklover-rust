@@ -37,6 +37,54 @@ fn it_works() {
     );
 }
 
+#[tokio::test]
+async fn it_works_without_dependency() {
+    stacklover! {
+        // struct name to be defined
+        Iterator1,
+        // empty parameters
+        fn () -> impl Iterator<Item=i32> {
+            vec![1, 2, 3]
+            .into_iter()
+            .map(|x| x * 2)
+        }
+    }
+
+    stacklover! {
+        // struct name to be defined
+        Iterator2,
+        // empty parameters
+        async fn () -> impl Iterator<Item=i32> {
+            vec![1, 2, 3]
+            .into_iter()
+            .map(|x| x * 2)
+        }
+    }
+
+    {
+        let (tx, rx) = std::sync::mpsc::channel();
+        std::thread::spawn(move || {
+            let iter = Iterator1::new();
+            tx.send(iter).unwrap();
+        });
+
+        let iter = rx.recv().unwrap().into_inner();
+        assert_eq!(iter.into_iter().collect::<Vec<i32>>(), vec![2, 4, 6]);
+    };
+
+    {
+        let (mut tx, mut rx) = futures::channel::mpsc::channel(1);
+
+        tokio::spawn(async move {
+            let iter = Iterator2::new().await;
+            tx.send(iter).await.unwrap();
+        });
+
+        let iter = rx.next().await.unwrap().into_inner();
+        assert_eq!(iter.into_iter().collect::<Vec<i32>>(), vec![2, 4, 6]);
+    }
+}
+
 #[test]
 fn drops() {
     let dropped_count = Arc::new(Mutex::new(0));
