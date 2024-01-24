@@ -101,7 +101,7 @@ macro_rules! stacklover {
                 }
             }
 
-            impl Drop for [<__Stacklover $struct_name>] {
+            impl ::core::ops::Drop for [<__Stacklover $struct_name>] {
                 fn drop(&mut self) {
                     let _ = if true {
                         unsafe { ::core::mem::transmute(self.inner) }
@@ -217,7 +217,7 @@ macro_rules! stacklover {
                }
             }
 
-            impl Drop for [<__Stacklover $struct_name>] {
+            impl ::core::ops::Drop for [<__Stacklover $struct_name>] {
                 fn drop(&mut self) {
                     let _ = if true {
                         unsafe { ::core::mem::transmute(self.inner) }
