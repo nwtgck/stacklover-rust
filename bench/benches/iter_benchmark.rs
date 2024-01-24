@@ -1,11 +1,13 @@
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use stacklover::stacklover;
 
 fn iter_i32() -> impl Iterator<Item = i32> {
-    (1..)
-        .map(|x| x * 3)
-        .take_while(|x| *x < 20)
-        .chain("HELLO".chars().map(|c| c as i32).flat_map(|i| [i, i - 65]))
+    black_box(
+        (1..)
+            .map(|x| x * 3)
+            .take_while(|x| *x < 999999999)
+            .chain("HELLO".chars().map(|c| c as i32).flat_map(|i| [i, i - 65])),
+    )
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
