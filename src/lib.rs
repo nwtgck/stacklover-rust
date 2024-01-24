@@ -163,15 +163,15 @@ macro_rules! stacklover {
                     $($body)*
                 }
 
-               fn create_unreachable() -> $return_type {
+                fn create_unreachable() -> $return_type {
                     fn wrap_future<T: core::future::Future<Output = O>, O>(_: T) -> O {
                         unreachable!()
                     }
                     #[allow(unreachable_code)]
                     wrap_future(Self::create( $( $crate::__ident_to_unreachable!($param) ),* ))
-               }
+                }
 
-               #[inline(always)]
+                #[inline(always)]
                 fn as_ref(&self) -> &($return_type) {
                     if true {
                         unsafe { ::core::mem::transmute(&self.inner) }
@@ -199,22 +199,22 @@ macro_rules! stacklover {
                     }
                 }
 
-               #[inline(always)]
-               fn into_inner(self) -> $return_type {
-                   let inner = if true {
-                       unsafe { ::core::mem::transmute(self.inner) }
-                   } else {
-                       // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
+                #[inline(always)]
+                fn into_inner(self) -> $return_type {
+                    let inner = if true {
+                        unsafe { ::core::mem::transmute(self.inner) }
+                    } else {
+                        // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
                         // TODO: allow user to specify traits
                         fn assert_traits<T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe>(x: T) -> T {
                             x
                         }
-                       #[allow(unreachable_code)]
-                       assert_traits(Self::create_unreachable())
-                   };
-                   ::core::mem::forget(self);
-                   inner
-               }
+                        #[allow(unreachable_code)]
+                        assert_traits(Self::create_unreachable())
+                    };
+                    ::core::mem::forget(self);
+                    inner
+                }
             }
 
             impl ::core::ops::Drop for [<__Stacklover $struct_name>] {
