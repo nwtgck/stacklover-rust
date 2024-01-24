@@ -9,11 +9,10 @@ fn iter_i32() -> impl Iterator<Item = i32> {
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
-    c.bench_function("bare iter", |b| b.iter(|| iter_i32().sum::<i32>()));
-    c.bench_function("boxed iter", |b| {
-        b.iter(|| Box::new(iter_i32()).sum::<i32>())
-    });
-    c.bench_function("stacklover iter", |b| {
+    let mut group = c.benchmark_group("iterator sum");
+    group.bench_function("bare", |b| b.iter(|| iter_i32().sum::<i32>()));
+    group.bench_function("boxed", |b| b.iter(|| Box::new(iter_i32()).sum::<i32>()));
+    group.bench_function("stacklover", |b| {
         stacklover! {
             // struct name to be defined
             Iterator1,
@@ -23,6 +22,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         }
         b.iter(|| Iterator1::new().into_inner().sum::<i32>())
     });
+    group.finish();
 }
 
 criterion_group!(benches, criterion_benchmark);
