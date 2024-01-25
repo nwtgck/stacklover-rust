@@ -19,14 +19,17 @@ macro_rules! stacklover {
                     }
                 }
 
+                #[inline(always)]
                 pub fn as_ref(&self) -> &($return_type) {
                     self.__private.as_ref()
                 }
 
+                #[inline(always)]
                 pub fn as_mut(&mut self) -> &mut ($return_type) {
                     self.__private.as_mut()
                 }
 
+                #[inline(always)]
                 pub fn into_inner(self) -> $return_type {
                     self.__private.into_inner()
                 }
@@ -132,14 +135,17 @@ macro_rules! stacklover {
                     }
                 }
 
+                #[inline(always)]
                 pub fn as_ref(&self) -> &($return_type) {
                     self.__private.as_ref()
                 }
 
+                #[inline(always)]
                 pub fn as_mut(&mut self) -> &mut ($return_type) {
                     self.__private.as_mut()
                 }
 
+                #[inline(always)]
                 pub fn into_inner(self) -> $return_type {
                     self.__private.into_inner()
                 }
@@ -233,7 +239,9 @@ macro_rules! stacklover {
 
 #[macro_export]
 macro_rules! __ident_to_unreachable {
-    ( $x:ident ) => { unreachable!() };
+    ( $x:ident ) => {
+        unreachable!()
+    };
 }
 
 pub mod private_mod {
