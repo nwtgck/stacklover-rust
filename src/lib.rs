@@ -65,7 +65,7 @@ macro_rules! stacklover {
                     } else {
                         // _self for lifetime
                         fn ref_unreachable<S, T>(_self: &S, _: T) -> &T {
-                            unreachable!()
+                            ::core::unreachable!()
                         }
                         #[allow(unreachable_code)]
                         ref_unreachable(self, Self::create_unreachable())
@@ -79,7 +79,7 @@ macro_rules! stacklover {
                     } else {
                         // _self for lifetime
                         fn mut_unreachable<S, T>(_self: &S, _: T) -> &mut T {
-                            unreachable!()
+                            ::core::unreachable!()
                         }
                         #[allow(unreachable_code)]
                         mut_unreachable(self, Self::create_unreachable())
@@ -171,7 +171,7 @@ macro_rules! stacklover {
 
                 fn create_unreachable() -> $return_type {
                     fn wrap_future<T: core::future::Future<Output = O>, O>(_: T) -> O {
-                        unreachable!()
+                        ::core::unreachable!()
                     }
                     #[allow(unreachable_code)]
                     wrap_future(Self::create( $( $crate::__ident_to_unreachable!($param) ),* ))
@@ -184,7 +184,7 @@ macro_rules! stacklover {
                     } else {
                         // _self for lifetime
                         fn ref_unreachable<S, T>(_self: &S, _: T) -> &T {
-                            unreachable!()
+                            ::core::unreachable!()
                         }
                         #[allow(unreachable_code)]
                         ref_unreachable(self, Self::create_unreachable())
@@ -198,7 +198,7 @@ macro_rules! stacklover {
                     } else {
                         // _self for lifetime
                         fn mut_unreachable<S, T>(_self: &S, _: T) -> &mut T {
-                            unreachable!()
+                            ::core::unreachable!()
                         }
                         #[allow(unreachable_code)]
                         mut_unreachable(self, Self::create_unreachable())
@@ -240,7 +240,7 @@ macro_rules! stacklover {
 #[macro_export]
 macro_rules! __ident_to_unreachable {
     ( $x:ident ) => {
-        unreachable!()
+        ::core::unreachable!()
     };
 }
 
