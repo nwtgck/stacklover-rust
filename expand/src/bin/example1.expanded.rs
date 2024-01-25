@@ -62,7 +62,7 @@ impl __StackloverIterator1 {
     #[inline(always)]
     fn as_ref(&self) -> &(impl Iterator<Item = i32>) {
         if true {
-            unsafe { ::core::mem::transmute(&self.inner) }
+            unsafe { ::core::mem::transmute::<&[u8; Self::SIZE], _>(&self.inner) }
         } else {
             fn ref_unreachable<S, T>(_self: &S, _: T) -> &T {
                 ::core::panicking::panic("internal error: entered unreachable code")
@@ -73,7 +73,9 @@ impl __StackloverIterator1 {
     #[inline(always)]
     fn as_mut(&mut self) -> &mut (impl Iterator<Item = i32>) {
         if true {
-            unsafe { ::core::mem::transmute(&mut self.inner) }
+            unsafe {
+                ::core::mem::transmute::<&mut [u8; Self::SIZE], _>(&mut self.inner)
+            }
         } else {
             fn mut_unreachable<S, T>(_self: &S, _: T) -> &mut T {
                 ::core::panicking::panic("internal error: entered unreachable code")
@@ -84,7 +86,7 @@ impl __StackloverIterator1 {
     #[inline(always)]
     fn into_inner(self) -> impl Iterator<Item = i32> {
         let inner = if true {
-            unsafe { ::core::mem::transmute(self.inner) }
+            unsafe { ::core::mem::transmute::<[u8; Self::SIZE], _>(self.inner) }
         } else {
             fn assert_traits<
                 T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin
@@ -101,7 +103,7 @@ impl __StackloverIterator1 {
 impl ::core::ops::Drop for __StackloverIterator1 {
     fn drop(&mut self) {
         let _ = if true {
-            unsafe { ::core::mem::transmute(self.inner) }
+            unsafe { ::core::mem::transmute::<[u8; Self::SIZE], _>(self.inner) }
         } else {
             #[allow(unreachable_code)] Self::create_unreachable()
         };

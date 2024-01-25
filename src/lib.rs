@@ -61,7 +61,7 @@ macro_rules! stacklover {
                 #[inline(always)]
                 fn as_ref(&self) -> &($return_type) {
                     if true {
-                        unsafe { ::core::mem::transmute(&self.inner) }
+                        unsafe { ::core::mem::transmute::<&[u8; Self::SIZE], _>(&self.inner) }
                     } else {
                         // _self for lifetime
                         fn ref_unreachable<S, T>(_self: &S, _: T) -> &T {
@@ -75,7 +75,7 @@ macro_rules! stacklover {
                 #[inline(always)]
                 fn as_mut(&mut self) -> &mut ($return_type) {
                     if true {
-                        unsafe { ::core::mem::transmute(&mut self.inner) }
+                        unsafe { ::core::mem::transmute::<&mut[u8; Self::SIZE], _>(&mut self.inner) }
                     } else {
                         // _self for lifetime
                         fn mut_unreachable<S, T>(_self: &S, _: T) -> &mut T {
@@ -89,7 +89,7 @@ macro_rules! stacklover {
                 #[inline(always)]
                 fn into_inner(self) -> $return_type {
                     let inner = if true {
-                        unsafe { ::core::mem::transmute(self.inner) }
+                        unsafe { ::core::mem::transmute::<[u8; Self::SIZE], _>(self.inner) }
                     } else {
                         // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
                         // TODO: allow user to specify traits
@@ -107,7 +107,7 @@ macro_rules! stacklover {
             impl ::core::ops::Drop for [<__Stacklover $struct_name>] {
                 fn drop(&mut self) {
                     let _ = if true {
-                        unsafe { ::core::mem::transmute(self.inner) }
+                        unsafe { ::core::mem::transmute::<[u8; Self::SIZE], _>(self.inner) }
                     } else {
                         #[allow(unreachable_code)]
                         Self::create_unreachable()
@@ -180,7 +180,7 @@ macro_rules! stacklover {
                 #[inline(always)]
                 fn as_ref(&self) -> &($return_type) {
                     if true {
-                        unsafe { ::core::mem::transmute(&self.inner) }
+                        unsafe { ::core::mem::transmute::<&[u8; Self::SIZE], _>(&self.inner) }
                     } else {
                         // _self for lifetime
                         fn ref_unreachable<S, T>(_self: &S, _: T) -> &T {
@@ -194,7 +194,7 @@ macro_rules! stacklover {
                 #[inline(always)]
                 fn as_mut(&mut self) -> &mut ($return_type) {
                     if true {
-                        unsafe { ::core::mem::transmute(&mut self.inner) }
+                        unsafe { ::core::mem::transmute::<&mut [u8; Self::SIZE], _>(&mut self.inner) }
                     } else {
                         // _self for lifetime
                         fn mut_unreachable<S, T>(_self: &S, _: T) -> &mut T {
@@ -208,7 +208,7 @@ macro_rules! stacklover {
                 #[inline(always)]
                 fn into_inner(self) -> $return_type {
                     let inner = if true {
-                        unsafe { ::core::mem::transmute(self.inner) }
+                        unsafe { ::core::mem::transmute::<[u8; Self::SIZE], _>(self.inner) }
                     } else {
                         // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
                         // TODO: allow user to specify traits
@@ -226,7 +226,7 @@ macro_rules! stacklover {
             impl ::core::ops::Drop for [<__Stacklover $struct_name>] {
                 fn drop(&mut self) {
                     let _ = if true {
-                        unsafe { ::core::mem::transmute(self.inner) }
+                        unsafe { ::core::mem::transmute::<[u8; Self::SIZE], _>(self.inner) }
                     } else {
                         #[allow(unreachable_code)]
                         Self::create_unreachable()
