@@ -101,6 +101,7 @@ impl __StackloverIterator1 {
     }
 }
 impl ::core::ops::Drop for __StackloverIterator1 {
+    #[inline(always)]
     fn drop(&mut self) {
         let _ = if true {
             unsafe { ::core::mem::transmute::<[u8; Self::SIZE], _>(self.inner) }
