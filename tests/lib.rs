@@ -115,6 +115,15 @@ fn drops() {
         assert_eq!(*dropped_count.lock().unwrap(), 2);
     }
     assert_eq!(*dropped_count.lock().unwrap(), 2);
+    {
+        let s = MyStructStruct::new(dropped_count.clone());
+        {
+            assert_eq!(*dropped_count.lock().unwrap(), 2);
+            let _inner = s.into_inner();
+            assert_eq!(*dropped_count.lock().unwrap(), 2);
+        }
+        assert_eq!(*dropped_count.lock().unwrap(), 3);
+    }
 }
 
 #[tokio::test]
