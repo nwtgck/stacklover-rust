@@ -25,13 +25,14 @@ jobs:
     - run: rustup default ${RUST_VERSION}
     - uses: actions/checkout@v4
     - run: cargo test -- --color=always --nocapture
+    - run: cargo test --release -- --color=always --nocapture
 
   # MSRV (minimum supported Rust version)
   cargo_test_msrv:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v4
     - run: rustup default 1.63.0
+    - uses: actions/checkout@v4
     - run: cargo test -- --color=always --nocapture
 
   cargo_bench:

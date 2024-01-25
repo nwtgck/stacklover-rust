@@ -1,6 +1,6 @@
 use futures::{SinkExt as _, StreamExt as _};
 use stacklover::stacklover;
-use std::mem::{size_of, MaybeUninit};
+use std::mem::size_of;
 use std::sync::{Arc, Mutex};
 
 #[test]
@@ -17,10 +17,7 @@ fn it_works() {
             .into_iter()
             .map(|x| x * 2)
     }
-    assert_eq!(
-        size_of::<Iterator1>(),
-        size_of_val(&create(uninit(), uninit()))
-    );
+    assert_eq!(size_of::<Iterator1>(), size_of_val(&create("", 0)));
 
     let (tx, rx) = std::sync::mpsc::channel();
     std::thread::spawn(move || {
@@ -158,10 +155,7 @@ async fn it_works_with_async() {
             .into_iter()
             .map(|x| x * 2)
     }
-    assert_eq!(
-        size_of::<Iterator2>(),
-        size_of_val(&create(uninit(), uninit()).await)
-    );
+    assert_eq!(size_of::<Iterator2>(), size_of_val(&create("", 0).await));
 
     let (mut tx, mut rx) = futures::channel::mpsc::channel(1);
 
@@ -181,8 +175,4 @@ async fn it_works_with_async() {
 
 const fn size_of_val<T>(_: &T) -> usize {
     size_of::<T>()
-}
-
-fn uninit<T>() -> T {
-    unsafe { MaybeUninit::uninit().assume_init() }
 }
