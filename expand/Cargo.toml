@@ -1,0 +1,9 @@
+[package]
+name = "stacklover-expand"
+edition = "2021"
+
+[dependencies]
+stacklover = { path = ".." }
+
+[[bin]]
+name = "example1"
