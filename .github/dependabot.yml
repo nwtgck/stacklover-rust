@@ -1,0 +1,26 @@
+version: 2
+updates:
+- package-ecosystem: cargo
+  directory: "/"
+  schedule:
+    interval: daily
+    timezone: Asia/Tokyo
+  open-pull-requests-limit: 99
+  reviewers: [ nwtgck ]
+  assignees: [ nwtgck ]
+- package-ecosystem: cargo
+  directory: "/bench"
+  schedule:
+    interval: daily
+    timezone: Asia/Tokyo
+  open-pull-requests-limit: 99
+  reviewers: [ nwtgck ]
+  assignees: [ nwtgck ]
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: daily
+    timezone: Asia/Tokyo
+  open-pull-requests-limit: 99
+  reviewers: [ nwtgck ]
+  assignees: [ nwtgck ]
