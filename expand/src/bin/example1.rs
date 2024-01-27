@@ -1,6 +1,4 @@
-use stacklover::stacklover;
-
-stacklover! {
+stacklover::define_struct! {
     Iterator1,
     fn (dep1: &'static str, dep2: i32) -> impl Iterator<Item=i32> {
         (1..)

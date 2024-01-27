@@ -1,5 +1,4 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use stacklover::stacklover;
 
 fn iter_i64() -> impl Iterator<Item = i64> {
     black_box(1..)
@@ -13,7 +12,7 @@ fn criterion_benchmark(c: &mut Criterion) {
     group.bench_function("bare", |b| b.iter(|| iter_i64().sum::<i64>()));
     group.bench_function("boxed", |b| b.iter(|| Box::new(iter_i64()).sum::<i64>()));
     group.bench_function("stacklover", |b| {
-        stacklover! {
+        stacklover::define_struct! {
             // struct name to be defined
             Iterator1,
             fn () -> impl Iterator<Item=i64> {

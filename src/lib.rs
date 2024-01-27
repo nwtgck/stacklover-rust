@@ -1,5 +1,5 @@
 #[macro_export]
-macro_rules! stacklover {
+macro_rules! define_struct {
     // not async create
     (
         $struct_name:ident,

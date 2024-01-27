@@ -3,7 +3,6 @@
 use std::prelude::rust_2021::*;
 #[macro_use]
 extern crate std;
-use stacklover::stacklover;
 struct Iterator1 {
     #[doc(hidden)]
     __private_inner: [u8; Iterator1::__SIZE],
