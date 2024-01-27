@@ -1,7 +1,11 @@
 #[macro_export]
 macro_rules! stacklover {
     // not async create
-    ($struct_name:ident, fn ( $( $param:ident: $param_ty:ty ),* ) -> $return_type:ty { $($body:tt)* }) => {
+    (
+        $struct_name:ident,
+        $(#[$attrs:meta])*
+        fn ( $( $param:ident: $param_ty:ty ),* ) -> $return_type:ty { $($body:tt)* }
+    ) => {
         struct $struct_name {
             #[doc(hidden)]
             __private_inner: [u8; $struct_name::__SIZE]
@@ -10,6 +14,7 @@ macro_rules! stacklover {
         const _: () = {
             // NOTE: prefix "__" is for avoiding name confliction. The function body should not use the function name because it will be accidentally a recursive function.
             #[inline(always)]
+            $(#[$attrs])*
             fn __stacklover_create( $($param: $param_ty ),* ) -> $return_type {
                 $($body)*
             }
@@ -98,13 +103,18 @@ macro_rules! stacklover {
         };
     };
     // async create
-    ($struct_name:ident, $async:ident fn ( $( $param:ident: $param_ty:ty ),* ) -> $return_type:ty { $($body:tt)* }) => {
+    (
+        $struct_name:ident,
+        $(#[$attrs:meta])*
+        $async:ident fn ( $( $param:ident: $param_ty:ty ),* ) -> $return_type:ty { $($body:tt)* }
+    ) => {
         struct $struct_name {
             __private_inner: [u8; $struct_name::__SIZE]
         }
 
         const _: () = {
             #[inline(always)]
+            $(#[$attrs])*
             $async fn __stacklover_create( $($param: $param_ty ),* ) -> $return_type {
                 $($body)*
             }

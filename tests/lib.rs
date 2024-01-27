@@ -29,7 +29,7 @@ fn it_works() {
     assert_eq!(iter.as_ref().size_hint(), (5, Some(5)));
     assert_eq!(iter.as_mut().next(), Some(2));
     assert_eq!(
-        iter.into_inner().into_iter().collect::<Vec<i32>>(),
+        iter.into_inner().into_iter().collect::<Vec<_>>(),
         vec![4, 6, 10, 200]
     );
 }
@@ -66,7 +66,7 @@ async fn it_works_without_dependency() {
         });
 
         let iter = rx.recv().unwrap().into_inner();
-        assert_eq!(iter.into_iter().collect::<Vec<i32>>(), vec![2, 4, 6]);
+        assert_eq!(iter.into_iter().collect::<Vec<_>>(), vec![2, 4, 6]);
     };
 
     {
@@ -78,7 +78,7 @@ async fn it_works_without_dependency() {
         });
 
         let iter = rx.next().await.unwrap().into_inner();
-        assert_eq!(iter.into_iter().collect::<Vec<i32>>(), vec![2, 4, 6]);
+        assert_eq!(iter.into_iter().collect::<Vec<_>>(), vec![2, 4, 6]);
     }
 }
 
@@ -142,6 +142,36 @@ async fn it_works_with_arc() {
     }
 }
 
+#[test]
+fn it_works_with_auto_enum_attribute() {
+    stacklover! {
+        AutoEnumIterator,
+        #[auto_enums::auto_enum(Iterator)]
+        fn (x: i32) -> impl Iterator<Item=i32> {
+            match x {
+                0 => 1..10,
+                _ => vec![5, 10].into_iter(),
+            }
+        }
+    }
+
+    let (tx, rx) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        let iter1 = AutoEnumIterator::new(0);
+        tx.send(iter1).unwrap();
+        let iter2 = AutoEnumIterator::new(1);
+        tx.send(iter2).unwrap();
+    });
+
+    let iter1 = rx.recv().unwrap().into_inner();
+    assert_eq!(
+        iter1.into_iter().collect::<Vec<_>>(),
+        vec![1, 2, 3, 4, 5, 6, 7, 8, 9]
+    );
+    let iter2 = rx.recv().unwrap().into_inner();
+    assert_eq!(iter2.into_iter().collect::<Vec<_>>(), vec![5, 10]);
+}
+
 #[tokio::test]
 async fn it_works_with_async() {
     stacklover! {
@@ -168,9 +198,39 @@ async fn it_works_with_async() {
     assert_eq!(iter.as_ref().size_hint(), (5, Some(5)));
     assert_eq!(iter.as_mut().next(), Some(2));
     assert_eq!(
-        iter.into_inner().into_iter().collect::<Vec<i32>>(),
+        iter.into_inner().into_iter().collect::<Vec<_>>(),
         vec![4, 6, 10, 200]
     );
+}
+
+#[tokio::test]
+async fn it_works_with_async_auto_enum_attribute() {
+    stacklover! {
+        AutoEnumIterator,
+        #[auto_enums::auto_enum(Iterator)]
+        async fn (x: i32) -> impl Iterator<Item=i32> {
+            match x {
+                0 => 1..10,
+                _ => vec![5, 10].into_iter(),
+            }
+        }
+    }
+
+    let (mut tx, mut rx) = futures::channel::mpsc::channel(1);
+    tokio::spawn(async move {
+        let iter1 = AutoEnumIterator::new(0).await;
+        tx.send(iter1).await.unwrap();
+        let iter2 = AutoEnumIterator::new(1).await;
+        tx.send(iter2).await.unwrap();
+    });
+
+    let iter1 = rx.next().await.unwrap().into_inner();
+    assert_eq!(
+        iter1.into_iter().collect::<Vec<_>>(),
+        vec![1, 2, 3, 4, 5, 6, 7, 8, 9]
+    );
+    let iter2 = rx.next().await.unwrap().into_inner();
+    assert_eq!(iter2.into_iter().collect::<Vec<_>>(), vec![5, 10]);
 }
 
 const fn size_of_val<T>(_: &T) -> usize {
