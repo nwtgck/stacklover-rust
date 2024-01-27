@@ -28,7 +28,7 @@ const _: () = {
     fn __stacklover_assert_traits() {
         fn assert_traits<
             T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin
-                + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe,
+                + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe + 'static,
         >(x: T) -> T {
             x
         }

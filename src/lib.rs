@@ -28,7 +28,7 @@ macro_rules! stacklover {
             fn __stacklover_assert_traits() {
                 // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
                 // TODO: allow user to specify traits
-                fn assert_traits<T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe>(x: T) -> T {
+                fn assert_traits<T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe + 'static>(x: T) -> T {
                     x
                 }
                 assert_traits(__stacklover_create_unreachable());
@@ -136,7 +136,7 @@ macro_rules! stacklover {
             fn __stacklover_assert_traits() {
                 // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
                 // TODO: allow user to specify traits
-                fn assert_traits<T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe>(x: T) -> T {
+                fn assert_traits<T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe + 'static>(x: T) -> T {
                     x
                 }
                 assert_traits(__stacklover_create_unreachable());
