@@ -34,6 +34,25 @@ fn it_works() {
     );
 }
 
+#[test]
+fn it_works_with_fn() {
+    stacklover! {
+        MyFn,
+        fn (s: String) -> impl Fn(i32) -> i32 {
+            move |i: i32| { i + s.len() as i32 }
+        }
+    }
+    let (tx, rx) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        let fn1 = MyFn::new("hello".to_owned());
+        tx.send(fn1).unwrap();
+    });
+
+    let fn1 = rx.recv().unwrap().into_inner();
+    assert_eq!(fn1(10), 15);
+    assert_eq!(fn1(100), 105);
+}
+
 #[tokio::test]
 async fn it_works_without_dependency() {
     stacklover! {
