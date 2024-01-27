@@ -217,6 +217,7 @@ macro_rules! define_struct {
     };
 }
 
+#[doc(hidden)]
 #[macro_export]
 macro_rules! __ident_to_unreachable {
     ( $x:ident ) => {
