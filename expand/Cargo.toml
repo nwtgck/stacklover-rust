@@ -7,3 +7,6 @@ stacklover = { path = ".." }
 
 [[bin]]
 name = "example1"
+
+[[bin]]
+name = "example2"
