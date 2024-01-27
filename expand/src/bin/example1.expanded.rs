@@ -24,6 +24,16 @@ const _: () = {
             ::core::panicking::panic("internal error: entered unreachable code"),
         )
     }
+    #[allow(unused)]
+    fn __stacklover_assert_traits() {
+        fn assert_traits<
+            T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin
+                + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe,
+        >(x: T) -> T {
+            x
+        }
+        assert_traits(__stacklover_create_unreachable());
+    }
     impl Iterator1 {
         #[doc(hidden)]
         const __SIZE: usize = {
@@ -84,15 +94,7 @@ const _: () = {
                     ::core::mem::transmute::<[u8; Self::__SIZE], _>(self.__private_inner)
                 }
             } else {
-                fn assert_traits<
-                    T: ::core::marker::Send + ::core::marker::Sync
-                        + ::core::marker::Unpin + ::core::panic::UnwindSafe
-                        + ::core::panic::RefUnwindSafe,
-                >(x: T) -> T {
-                    x
-                }
-                #[allow(unreachable_code)]
-                assert_traits(__stacklover_create_unreachable())
+                #[allow(unreachable_code)] __stacklover_create_unreachable()
             };
             ::core::mem::forget(self);
             inner
