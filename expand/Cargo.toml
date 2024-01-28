@@ -10,3 +10,6 @@ name = "example1"
 
 [[bin]]
 name = "example2"
+
+[[bin]]
+name = "example3"
