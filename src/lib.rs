@@ -187,7 +187,7 @@ macro_rules! define_struct {
 
             #[allow(unreachable_code)]
             fn __stacklover_inner_unreachable() -> $inner_type {
-                fn await_future_unreachable<T: core::future::Future<Output = O>, O>(_: T) -> O {
+                fn await_future_unreachable<T: ::core::future::Future<Output = O>, O>(_: T) -> O {
                     ::core::unreachable!()
                 }
                 let __stacklover_awaited_created_value = await_future_unreachable(__stacklover_create( $( $crate::__ident_to_unreachable!($param) ),* ));
@@ -242,7 +242,7 @@ macro_rules! define_struct {
                 }
 
                 #[inline(always)]
-                pub fn as_ref(&self) -> &($create_fn_return_type) {
+                pub fn as_ref(&self) -> &($inner_type) {
                     if true {
                         unsafe { ::core::mem::transmute::<&[u8; Self::__SIZE], _>(&self.__private_inner) }
                     } else {
@@ -256,7 +256,7 @@ macro_rules! define_struct {
                 }
 
                 #[inline(always)]
-                pub fn as_mut(&mut self) -> &mut ($create_fn_return_type) {
+                pub fn as_mut(&mut self) -> &mut ($inner_type) {
                     if true {
                         unsafe { ::core::mem::transmute::<&mut [u8; Self::__SIZE], _>(&mut self.__private_inner) }
                     } else {
@@ -270,7 +270,7 @@ macro_rules! define_struct {
                 }
 
                 #[inline(always)]
-                pub fn into_inner(self) -> $create_fn_return_type {
+                pub fn into_inner(self) -> $inner_type {
                     let inner = if true {
                         unsafe { ::core::mem::transmute::<[u8; Self::__SIZE], _>(self.__private_inner) }
                     } else {

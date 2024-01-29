@@ -21,7 +21,9 @@ const _: () = {
     }
     #[allow(unreachable_code)]
     fn __stacklover_inner_unreachable() -> impl Iterator<Item = i32> {
-        fn await_future_unreachable<T: core::future::Future<Output = O>, O>(_: T) -> O {
+        fn await_future_unreachable<T: ::core::future::Future<Output = O>, O>(
+            _: T,
+        ) -> O {
             ::core::panicking::panic("internal error: entered unreachable code")
         }
         let __stacklover_awaited_created_value = await_future_unreachable(
