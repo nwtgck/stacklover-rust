@@ -12,7 +12,7 @@ macro_rules! define_struct {
             fn ( $( $param: $param_ty ),* ) -> $create_fn_return_type { $($create_fn_body)* },
             inner_type = $create_fn_return_type,
             wrapped_type = __Inner__,
-            handle_wrapped = |created_value, inner_to_struct| { inner_to_struct(created_value) },
+            to_wrapped_struct = |created_value, inner_to_struct| { inner_to_struct(created_value) },
         );
     };
     // not async create
@@ -23,7 +23,7 @@ macro_rules! define_struct {
         inner_type = $inner_type:ty,
         // wrapped_type should include __Inner__
         wrapped_type = $wrapped_type:ty,
-        handle_wrapped = |$created_value:ident, $inner_to_struct_fn:ident| { $($handle_wrapped_body:tt)* } $(,)?
+        to_wrapped_struct = |$created_value:ident, $inner_to_struct_fn:ident| { $($to_wrapped_struct_body:tt)* } $(,)?
     ) => {
         struct $struct_name {
             #[doc(hidden)]
@@ -50,7 +50,7 @@ macro_rules! define_struct {
                     let $created_value = __stacklover_created_value;
                     let $inner_to_struct_fn = __stacklover_inner_to_struct_fn;
                     // For type inference of __stacklover_inner_to_struct_fn
-                    $($handle_wrapped_body)*
+                    $($to_wrapped_struct_body)*
                 };
                 fn __stacklover_inner_to_struct_fn_param_unreachable<T, R>(_: impl Fn(T) -> R) -> T {
                     unreachable!()
@@ -60,7 +60,7 @@ macro_rules! define_struct {
 
             #[allow(unused)]
             fn __stacklover_assert_traits() {
-                // auto traits: https://doc.rust-lang.org/reference/special-$types-and-traits.html#auto-traits
+                // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
                 // TODO: allow user to specify traits
                 fn assert_traits<T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe + 'static>(x: T) -> T {
                     x
@@ -89,7 +89,7 @@ macro_rules! define_struct {
                     {
                         let $created_value = __stacklover_created_value;
                         let $inner_to_struct_fn = __stacklover_inner_to_struct_fn;
-                        $($handle_wrapped_body)*
+                        $($to_wrapped_struct_body)*
                     }
                 }
 
@@ -159,7 +159,7 @@ macro_rules! define_struct {
             $async fn ( $( $param: $param_ty ),* ) -> $create_fn_return_type { $($create_fn_body)* },
             inner_type = $create_fn_return_type,
             wrapped_type = __Inner__,
-            handle_wrapped = |created_value, inner_to_struct| { inner_to_struct(created_value) },
+            to_wrapped_struct = |created_value, inner_to_struct| { inner_to_struct(created_value) },
         );
     };
     // async create
@@ -170,7 +170,7 @@ macro_rules! define_struct {
         inner_type = $inner_type:ty,
         // wrapped_type should include __Inner__
         wrapped_type = $wrapped_type:ty,
-        handle_wrapped = |$created_value:ident, $inner_to_struct_fn:ident| { $($handle_wrapped_body:tt)* } $(,)?
+        to_wrapped_struct = |$created_value:ident, $inner_to_struct_fn:ident| { $($to_wrapped_struct_body:tt)* } $(,)?
     ) => {
         struct $struct_name {
             __private_inner: [u8; $struct_name::__SIZE]
@@ -198,7 +198,7 @@ macro_rules! define_struct {
                     let $created_value = __stacklover_awaited_created_value;
                     let $inner_to_struct_fn = __stacklover_inner_to_struct_fn;
                     // For type inference of __stacklover_inner_to_struct_fn
-                    $($handle_wrapped_body)*
+                    $($to_wrapped_struct_body)*
                 };
                 fn __stacklover_inner_to_struct_fn_param_unreachable<T, R>(_: impl Fn(T) -> R) -> T {
                     unreachable!()
@@ -237,7 +237,7 @@ macro_rules! define_struct {
                     {
                         let $created_value = __stacklover_awaited_created_value;
                         let $inner_to_struct_fn = __stacklover_inner_to_struct_fn;
-                        $($handle_wrapped_body)*
+                        $($to_wrapped_struct_body)*
                     }
                 }
 

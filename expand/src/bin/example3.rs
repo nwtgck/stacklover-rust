@@ -12,7 +12,7 @@ define_struct! {
     },
     inner_type = impl Iterator<Item=i32>,
     wrapped_type = Result<__Inner__, std::io::Error>,
-    handle_wrapped = |result, inner_to_struct| { result.map(|inner| inner_to_struct(inner)) },
+    to_wrapped_struct = |result, inner_to_struct| { result.map(|inner| inner_to_struct(inner)) },
 }
 
 // cargo run --bin example3
