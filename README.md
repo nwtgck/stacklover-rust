@@ -261,6 +261,36 @@ let result: Result<(IteratorI32, String, f32), std::io::Error> = IteratorI32::ne
 let (iter, s, f): (IteratorI32, String, f32) = result?;
 ```
 
+### Derive example
+
+The following `Tuple1` implements `PartialEq`, `Eq` and `Debug` by specifying `derive = ( PartialEq, Eq, Debug )`. 
+
+```rust
+stacklover::define_struct! {
+    Tuple1,
+    fn (dep1: &str, dep2: i32) -> impl PartialEq + Eq + Debug {
+        (dep1.to_owned(), dep2, false)
+    },
+    derive = ( PartialEq, Eq, Debug ),
+}
+```
+
+It also works with wrapped type: 
+
+```rust
+stacklover::define_struct! {
+    Tuple1,
+    fn (dep1: &str, dep2: i32) -> Result<impl PartialEq + Eq + Debug, std::io::Error> {
+        Ok((dep1.to_owned(), dep2, false))
+    },
+    // Specify parameters in the following order.
+    derive = ( PartialEq, Eq, Debug ),
+    inner_type = impl PartialEq + Eq + Debug,
+    wrapped_type = Result<__Inner__, std::io::Error>,
+    to_wrapped_struct = |result, inner_to_struct| { result.map(inner_to_struct) },
+}
+```
+
 ### Using attributes - auto_enums
 Attributes can be used. Here is an example using [`auto_enums`](https://github.com/taiki-e/auto_enums), which allows us to return different types without heap allocations.
 
