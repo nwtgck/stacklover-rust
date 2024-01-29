@@ -8,6 +8,7 @@ struct Iterator1 {
     __private_inner: [u8; Iterator1::__SIZE],
 }
 const _: () = {
+    type __StackloverWrappedType<__Inner__> = __Inner__;
     #[inline(always)]
     fn __stacklover_create(dep1: &'static str, dep2: i32) -> impl Iterator<Item = i32> {
         (1..)
@@ -16,11 +17,29 @@ const _: () = {
             .chain("HELLO".chars().map(|c| c as i32).flat_map(|i| [i, i - 65]))
             .chain([dep1.len() as i32, dep2])
     }
-    fn __stacklover_create_unreachable() -> impl Iterator<Item = i32> {
-        #[allow(unreachable_code)]
-        __stacklover_create(
+    #[allow(unreachable_code)]
+    fn __stacklover_inner_unreachable() -> impl Iterator<Item = i32> {
+        let __stacklover_created_value = __stacklover_create(
             ::core::panicking::panic("internal error: entered unreachable code"),
             ::core::panicking::panic("internal error: entered unreachable code"),
+        );
+        let __stacklover_inner_to_struct_fn = |inner| Iterator1 {
+            __private_inner: ::core::panicking::panic(
+                "internal error: entered unreachable code",
+            ),
+        };
+        let _ = {
+            let created_value = __stacklover_created_value;
+            let inner_to_struct = __stacklover_inner_to_struct_fn;
+            inner_to_struct(created_value)
+        };
+        fn __stacklover_inner_to_struct_fn_param_unreachable<T, R>(
+            _: impl Fn(T) -> R,
+        ) -> T {
+            ::core::panicking::panic("internal error: entered unreachable code")
+        }
+        __stacklover_inner_to_struct_fn_param_unreachable(
+            __stacklover_inner_to_struct_fn,
         )
     }
     #[allow(unused)]
@@ -31,25 +50,31 @@ const _: () = {
         >(x: T) -> T {
             x
         }
-        assert_traits(__stacklover_create_unreachable());
+        assert_traits(__stacklover_inner_unreachable());
     }
     impl Iterator1 {
         #[doc(hidden)]
         const __SIZE: usize = {
             #[allow(non_camel_case_types)]
-            const fn size_of_return_value<dep1, dep2, __StackloverR>(
-                _: &(impl ::core::ops::Fn(dep1, dep2) -> __StackloverR),
+            const fn size_of_return_value<dep1, dep2, R>(
+                _: &(impl ::core::ops::Fn(dep1, dep2) -> __StackloverWrappedType<R>),
             ) -> usize {
-                ::core::mem::size_of::<__StackloverR>()
+                ::core::mem::size_of::<R>()
             }
             size_of_return_value(&__stacklover_create)
         };
         #[inline(always)]
-        pub fn new(dep1: &'static str, dep2: i32) -> Self {
-            Self {
+        pub fn new(dep1: &'static str, dep2: i32) -> __StackloverWrappedType<Self> {
+            let __stacklover_created_value = __stacklover_create(dep1, dep2);
+            let __stacklover_inner_to_struct_fn = |inner| Self {
                 __private_inner: unsafe {
-                    ::core::mem::transmute(__stacklover_create(dep1, dep2))
+                    ::core::mem::transmute::<_, [u8; Self::__SIZE]>(inner)
                 },
+            };
+            {
+                let created_value = __stacklover_created_value;
+                let inner_to_struct = __stacklover_inner_to_struct_fn;
+                inner_to_struct(created_value)
             }
         }
         #[inline(always)]
@@ -66,7 +91,7 @@ const _: () = {
                     ::core::panicking::panic("internal error: entered unreachable code")
                 }
                 #[allow(unreachable_code)]
-                ref_unreachable(self, __stacklover_create_unreachable())
+                ref_unreachable(self, __stacklover_inner_unreachable())
             }
         }
         #[inline(always)]
@@ -83,7 +108,7 @@ const _: () = {
                     ::core::panicking::panic("internal error: entered unreachable code")
                 }
                 #[allow(unreachable_code)]
-                mut_unreachable(self, __stacklover_create_unreachable())
+                mut_unreachable(self, __stacklover_inner_unreachable())
             }
         }
         #[inline(always)]
@@ -93,7 +118,7 @@ const _: () = {
                     ::core::mem::transmute::<[u8; Self::__SIZE], _>(self.__private_inner)
                 }
             } else {
-                #[allow(unreachable_code)] __stacklover_create_unreachable()
+                #[allow(unreachable_code)] __stacklover_inner_unreachable()
             };
             ::core::mem::forget(self);
             inner
@@ -107,7 +132,7 @@ const _: () = {
                     ::core::mem::transmute::<[u8; Self::__SIZE], _>(self.__private_inner)
                 }
             } else {
-                #[allow(unreachable_code)] __stacklover_create_unreachable()
+                #[allow(unreachable_code)] __stacklover_inner_unreachable()
             };
         }
     }

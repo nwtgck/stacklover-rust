@@ -223,9 +223,25 @@ macro_rules! wip_define_struct {
     (
         $struct_name:ident,
         $(#[$attrs:meta])*
+        fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* } $(,)?
+    ) => {
+        $crate::wip_define_struct!(
+            $struct_name,
+            $(#[$attrs])*
+            fn ( $( $param: $param_ty ),* ) -> $create_fn_return_type { $($create_fn_body)* },
+            inner_type = $create_fn_return_type,
+            wrapped_type = __Inner__,
+            handle_wrapped = |created_value, inner_to_struct| { inner_to_struct(created_value) },
+        );
+    };
+    // not async create
+    (
+        $struct_name:ident,
+        $(#[$attrs:meta])*
         fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
         inner_type = $inner_type:ty,
-        wrapped_type = $wrapped_type:ty, // type_for_size should include __Inner__
+        // wrapped_type should include __Inner__
+        wrapped_type = $wrapped_type:ty,
         handle_wrapped = |$created_value:ident, $inner_to_struct_fn:ident| { $($handle_wrapped_body:tt)* } $(,)?
     ) => {
         struct $struct_name {
@@ -263,7 +279,7 @@ macro_rules! wip_define_struct {
 
             #[allow(unused)]
             fn __stacklover_assert_traits() {
-                // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
+                // auto traits: https://doc.rust-lang.org/reference/special-$types-and-traits.html#auto-traits
                 // TODO: allow user to specify traits
                 fn assert_traits<T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe + 'static>(x: T) -> T {
                     x
@@ -286,7 +302,7 @@ macro_rules! wip_define_struct {
                     let __stacklover_created_value = __stacklover_create( $($param),* );
                     let __stacklover_inner_to_struct_fn = |inner| Self {
                         __private_inner: unsafe {
-                            ::core::mem::transmute(__stacklover_create( $($param),* ))
+                            ::core::mem::transmute::<_, [u8; Self::__SIZE]>(inner)
                         },
                     };
                     {

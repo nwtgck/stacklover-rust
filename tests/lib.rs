@@ -4,7 +4,7 @@ use std::sync::{Arc, Mutex};
 
 #[test]
 fn it_works() {
-    stacklover::define_struct! {
+    stacklover::wip_define_struct! {
         // struct name to be defined
         Iterator1,
         fn (dep1: &str, dep2: i32) -> impl Iterator<Item=i32> {
@@ -35,7 +35,7 @@ fn it_works() {
 
 #[test]
 fn it_works_with_fn() {
-    stacklover::define_struct! {
+    stacklover::wip_define_struct! {
         MyFn,
         fn (s: String) -> impl Fn(i32) -> i32 {
             move |i: i32| { i + s.len() as i32 }
@@ -54,7 +54,7 @@ fn it_works_with_fn() {
 
 #[tokio::test]
 async fn it_works_without_dependency() {
-    stacklover::define_struct! {
+    stacklover::wip_define_struct! {
         // struct name to be defined
         Iterator1,
         // empty parameters
@@ -112,7 +112,7 @@ fn drops() {
         }
     }
 
-    stacklover::define_struct! {
+    stacklover::wip_define_struct! {
         MyStructStruct,
         fn (dropped: Arc<Mutex<u32>>) -> MyStruct {
             MyStruct{dropped}
@@ -146,7 +146,7 @@ async fn it_works_with_arc() {
     // Using Arc caused the error below in some implementation
     // error[E0080]: evaluation of constant value failed
     // using uninitialized data, but this operation requires initialized memory
-    stacklover::define_struct! {
+    stacklover::wip_define_struct! {
         MyArc1,
         fn (dep1: &str) -> Arc<String> {
             Arc::new(dep1.to_owned())
@@ -162,7 +162,7 @@ async fn it_works_with_arc() {
 
 #[test]
 fn it_works_with_auto_enum_attribute() {
-    stacklover::define_struct! {
+    stacklover::wip_define_struct! {
         AutoEnumIterator,
         #[auto_enums::auto_enum(Iterator)]
         fn (x: i32) -> impl Iterator<Item=i32> {

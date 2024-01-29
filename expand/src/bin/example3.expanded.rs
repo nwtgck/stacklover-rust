@@ -73,7 +73,7 @@ const _: () = {
             let __stacklover_created_value = __stacklover_create(dep1, dep2);
             let __stacklover_inner_to_struct_fn = |inner| Self {
                 __private_inner: unsafe {
-                    ::core::mem::transmute(__stacklover_create(dep1, dep2))
+                    ::core::mem::transmute::<_, [u8; Self::__SIZE]>(inner)
                 },
             };
             {
