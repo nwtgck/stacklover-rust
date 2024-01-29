@@ -263,15 +263,15 @@ let (iter, s, f): (IteratorI32, String, f32) = result?;
 
 ### Derive example
 
-The following `Tuple1` implements `PartialEq`, `Eq` and `Debug` by specifying `derive = ( PartialEq, Eq, Debug )`. 
+The following `Tuple1` implements `PartialEq`, `Eq` and `Debug` by specifying `derive = ( PartialEq, Eq, Debug )`. The inner type should implement the traits. 
 
 ```rust
 stacklover::define_struct! {
     Tuple1,
-    fn (dep1: &str, dep2: i32) -> impl PartialEq + Eq + Debug {
+    fn (dep1: &str, dep2: i32) -> (String, i32, bool) {
         (dep1.to_owned(), dep2, false)
     },
-    derive = ( PartialEq, Eq, Debug ),
+    derive = ( PartialEq, Eq, Clone, Debug ),
 }
 ```
 
@@ -291,11 +291,13 @@ stacklover::define_struct! {
 }
 ```
 
-The following traits are supported.
+In `derive = (...)` you can specify the following traits.
 * [PartialEq](https://doc.rust-lang.org/std/cmp/trait.PartialEq.html)
 * [Eq](https://doc.rust-lang.org/std/cmp/trait.Eq.html)
 * [PartialOrd](https://doc.rust-lang.org/std/cmp/trait.PartialOrd.html)
 * [Ord](https://doc.rust-lang.org/std/cmp/trait.Ord.html)
+* [Clone](https://doc.rust-lang.org/std/clone/trait.Clone.html)
+* [Copy](https://doc.rust-lang.org/core/marker/trait.Copy.html)
 * [Hash](https://doc.rust-lang.org/std/hash/trait.Hash.html)
 * [Debug](https://doc.rust-lang.org/std/fmt/trait.Debug.html)
 

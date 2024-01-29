@@ -362,13 +362,22 @@ macro_rules! __derive_traits {
         $crate::__derive_traits!($struct_name, $($xs)*);
     };
     ( $struct_name:ident, Clone $($xs:ident)* ) => {
-        compile_error!("Deriving Clone not supported yet");
-        // The following compile error ocurred to implement:
-        // * "cannot transmute between types of different sizes, or dependently-sized types"
-        // * "cannot transmute_copy if Dst is larger than Src"
+        impl ::core::clone::Clone for $struct_name {
+            fn clone(&self) -> Self {
+                let cloned = ::core::clone::Clone::clone(self.as_ref());
+                Self {
+                    __private_inner: unsafe {
+                        ::core::mem::transmute::<_, [u8; Self::__SIZE]>(cloned)
+                    },
+                }
+            }
+        }
         $crate::__derive_traits!($struct_name, $($xs)*);
     };
-    // TODO: add Copy
+    ( $struct_name:ident, Copy $($xs:ident)* ) => {
+        impl ::core::marker::Copy for $struct_name {}
+        $crate::__derive_traits!($struct_name, $($xs)*);
+    };
     ( $struct_name:ident, Hash $($xs:ident)* ) => {
         impl ::core::hash::Hash for $struct_name {
             fn hash<H: ::core::hash::Hasher>(&self, state: &mut H) {

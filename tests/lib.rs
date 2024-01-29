@@ -38,12 +38,12 @@ fn it_works() {
 fn it_works_with_deriving() {
     stacklover::define_struct! {
         Tuple1,
-        fn (dep1: &str, dep2: i32) -> impl PartialEq + Eq + Debug {
+        fn (dep1: &str, dep2: i32) -> (String, i32, bool) {
             create(dep1, dep2)
         },
-        derive = ( PartialEq, Eq, Debug ),
+        derive = ( PartialEq, Eq, Clone, Debug ),
     }
-    fn create(dep1: &str, dep2: i32) -> impl PartialEq + Eq + Debug {
+    fn create(dep1: &str, dep2: i32) -> (String, i32, bool) {
         (dep1.to_owned(), dep2, false)
     }
 
@@ -51,6 +51,7 @@ fn it_works_with_deriving() {
     let bare = create("hello", 100);
     assert_eq!(format!("{:?}", x), format!("{:?}", bare));
     assert_eq!(x, x);
+    assert_eq!(x.clone().into_inner(), x.into_inner());
 }
 
 #[test]
