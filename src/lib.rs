@@ -353,6 +353,14 @@ macro_rules! __derive_traits {
         }
         $crate::__derive_traits!($struct_name, $($xs)*);
     };
+    ( $struct_name:ident, Ord $($xs:ident)* ) => {
+        impl ::core::cmp::Ord for MyStruct {
+            fn cmp(&self, other: &Self) -> ::core::cmp::Ordering {
+                self.as_ref().cmp(other.as_ref())
+            }
+        }
+        $crate::__derive_traits!($struct_name, $($xs)*);
+    };
     ( $struct_name:ident, Clone $($xs:ident)* ) => {
         compile_error!("Deriving Clone not supported yet");
         // The following compile error ocurred to implement:

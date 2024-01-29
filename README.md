@@ -291,6 +291,14 @@ stacklover::define_struct! {
 }
 ```
 
+The following traits are supported.
+* [PartialEq](https://doc.rust-lang.org/std/cmp/trait.PartialEq.html)
+* [Eq](https://doc.rust-lang.org/std/cmp/trait.Eq.html)
+* [PartialOrd](https://doc.rust-lang.org/std/cmp/trait.PartialOrd.html)
+* [Ord](https://doc.rust-lang.org/std/cmp/trait.Ord.html)
+* [Hash](https://doc.rust-lang.org/std/hash/trait.Hash.html)
+* [Debug](https://doc.rust-lang.org/std/fmt/trait.Debug.html)
+
 ### Using attributes - auto_enums
 Attributes can be used. Here is an example using [`auto_enums`](https://github.com/taiki-e/auto_enums), which allows us to return different types without heap allocations.
 
