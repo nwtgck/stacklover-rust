@@ -25,27 +25,21 @@ const _: () = {
     #[allow(unused)]
     #[allow(unreachable_code)]
     fn __stacklover_inner_unreachable() -> impl Iterator<Item = i32> {
-        let __stacklover_inner_to_struct_fn = |inner| Iterator1 {
-            __private_inner: ::core::panicking::panic(
-                "internal error: entered unreachable code",
-            ),
+        let __stacklover_inner_to_struct_fn_unreachable = |inner| -> Iterator1 {
+            ::core::panicking::panic("internal error: entered unreachable code")
         };
         let _ = {
             let result = __stacklover_create(
                 ::core::panicking::panic("internal error: entered unreachable code"),
                 ::core::panicking::panic("internal error: entered unreachable code"),
             );
-            let inner_to_struct = __stacklover_inner_to_struct_fn;
+            let inner_to_struct = __stacklover_inner_to_struct_fn_unreachable;
             result.map(|inner| inner_to_struct(inner))
         };
-        fn __stacklover_inner_to_struct_fn_param_unreachable<T, R>(
-            _: impl Fn(T) -> R,
-        ) -> T {
+        fn __stacklover_fn_param_unreachable<T, R>(_: impl Fn(T) -> R) -> T {
             ::core::panicking::panic("internal error: entered unreachable code")
         }
-        __stacklover_inner_to_struct_fn_param_unreachable(
-            __stacklover_inner_to_struct_fn,
-        )
+        __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
     }
     #[allow(unused)]
     fn __stacklover_assert_traits() {

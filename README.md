@@ -236,7 +236,7 @@ stacklover::define_struct! {
 // Use `IteratorI32` instead of complicated type.
 let result: Result<IteratorI32, std::io::Error> = IteratorI32::new(10);
 // Get IteratorI32 from Result by ?.
-let _x: IteratorI32 = result?;
+let x: IteratorI32 = result?;
 ```
 
 Here is an example with more nested type and async function.
@@ -256,7 +256,7 @@ stacklover::define_struct! {
 
 let result: Result<(IteratorI32, String, f32), std::io::Error> = IteratorI32::new(10).await;
 // Get a tuple with IteratorI32 from Result by ?.
-let (_iter, _s, _f): (IteratorI32, String, f32) = result?;
+let (iter, s, f): (IteratorI32, String, f32) = result?;
 ```
 
 ### Using attributes - auto_enums

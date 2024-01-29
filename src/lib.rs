@@ -43,19 +43,17 @@ macro_rules! define_struct {
             #[allow(unused)]
             #[allow(unreachable_code)]
             fn __stacklover_inner_unreachable() -> $inner_type {
-                let __stacklover_inner_to_struct_fn = |inner| $struct_name {
-                    __private_inner: ::core::unreachable!(),
-                };
+                let __stacklover_inner_to_struct_fn_unreachable = |inner| -> $struct_name { ::core::unreachable!() };
                 let _ = {
                     let $created_value = __stacklover_create( $( $crate::__ident_to_unreachable!($param) ),* );
-                    let $inner_to_struct_fn = __stacklover_inner_to_struct_fn;
-                    // For type inference of __stacklover_inner_to_struct_fn
+                    let $inner_to_struct_fn = __stacklover_inner_to_struct_fn_unreachable;
+                    // For type inference of __stacklover_inner_to_struct_fn_unreachable
                     $($to_wrapped_struct_body)*
                 };
-                fn __stacklover_inner_to_struct_fn_param_unreachable<T, R>(_: impl Fn(T) -> R) -> T {
+                fn __stacklover_fn_param_unreachable<T, R>(_: impl Fn(T) -> R) -> T {
                     ::core::unreachable!()
                 }
-                __stacklover_inner_to_struct_fn_param_unreachable(__stacklover_inner_to_struct_fn)
+                __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
             }
 
             #[allow(unused)]
@@ -190,19 +188,17 @@ macro_rules! define_struct {
                 fn await_future_unreachable<T: ::core::future::Future<Output = O>, O>(_: T) -> O {
                     ::core::unreachable!()
                 }
-                let __stacklover_inner_to_struct_fn = |inner| $struct_name {
-                    __private_inner: ::core::unreachable!(),
-                };
+                let __stacklover_inner_to_struct_fn_unreachable = |inner| -> $struct_name { ::core::unreachable!() };
                 let _ = {
                     let $created_value = await_future_unreachable(__stacklover_create( $( $crate::__ident_to_unreachable!($param) ),* ));
-                    let $inner_to_struct_fn = __stacklover_inner_to_struct_fn;
-                    // For type inference of __stacklover_inner_to_struct_fn
+                    let $inner_to_struct_fn = __stacklover_inner_to_struct_fn_unreachable;
+                    // For type inference of __stacklover_inner_to_struct_fn_unreachable
                     $($to_wrapped_struct_body)*
                 };
-                fn __stacklover_inner_to_struct_fn_param_unreachable<T, R>(_: impl Fn(T) -> R) -> T {
+                fn __stacklover_fn_param_unreachable<T, R>(_: impl Fn(T) -> R) -> T {
                     ::core::unreachable!()
                 }
-                __stacklover_inner_to_struct_fn_param_unreachable(__stacklover_inner_to_struct_fn)
+                __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
             }
 
             #[allow(unused)]
