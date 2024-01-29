@@ -34,6 +34,44 @@ fn it_works() {
 }
 
 #[test]
+fn it_works_with_wrap_params() {
+    stacklover::define_struct! {
+        Iterator1,
+        fn (dep1: &str, dep2: i32) -> Result<impl Iterator<Item=i32>, std::io::Error> {
+            let iter = create(dep1, dep2);
+            Ok(iter)
+        },
+        inner_type = impl Iterator<Item=i32>,
+        wrapped_type = Result<__Inner__, std::io::Error>,
+        to_wrapped_struct = |result, inner_to_struct| { result.map(inner_to_struct) },
+    }
+    fn create(dep1: &str, dep2: i32) -> impl Iterator<Item = i32> {
+        vec![1, 2, 3, dep1.len() as i32, dep2]
+            .into_iter()
+            .map(|x| x * 2)
+    }
+    assert_eq!(size_of::<Iterator1>(), size_of_val(&create("hello", 100)));
+
+    let (tx, rx) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        let result: Result<Iterator1, std::io::Error> = Iterator1::new("hello", 100);
+        if let Ok(iter) = result {
+            tx.send(iter).unwrap();
+        } else {
+            assert!(false);
+        }
+    });
+
+    let mut iter = rx.recv().unwrap();
+    assert_eq!(iter.as_ref().size_hint(), (5, Some(5)));
+    assert_eq!(iter.as_mut().next(), Some(2));
+    assert_eq!(
+        iter.into_inner().into_iter().collect::<Vec<_>>(),
+        vec![4, 6, 10, 200]
+    );
+}
+
+#[test]
 fn it_works_with_fn() {
     stacklover::define_struct! {
         MyFn,
@@ -195,6 +233,7 @@ async fn it_works_with_async() {
     stacklover::define_struct! {
         Iterator2,
         async fn (dep1: &'static str, dep2: i32) -> impl Iterator<Item=i32> {
+            tokio::time::sleep(tokio::time::Duration::from_nanos(0)).await;
             create(dep1, dep2).await
         }
     }
@@ -210,6 +249,46 @@ async fn it_works_with_async() {
     tokio::spawn(async move {
         let iter = Iterator2::new("hello", 100).await;
         tx.send(iter).await.unwrap();
+    });
+
+    let mut iter = rx.next().await.unwrap();
+    assert_eq!(iter.as_ref().size_hint(), (5, Some(5)));
+    assert_eq!(iter.as_mut().next(), Some(2));
+    assert_eq!(
+        iter.into_inner().into_iter().collect::<Vec<_>>(),
+        vec![4, 6, 10, 200]
+    );
+}
+
+#[tokio::test]
+async fn it_works_with_async_fn_and_wrap_params() {
+    stacklover::define_struct! {
+        Iterator1,
+        async fn (dep1: &'static str, dep2: i32) -> Result<impl Iterator<Item=i32>, std::io::Error> {
+            tokio::time::sleep(tokio::time::Duration::from_nanos(0)).await;
+            let iter = create(dep1, dep2).await;
+            Ok(iter)
+        },
+        inner_type = impl Iterator<Item=i32>,
+        wrapped_type = Result<__Inner__, std::io::Error>,
+        to_wrapped_struct = |result, inner_to_struct| { result.map(inner_to_struct) },
+    }
+    async fn create(dep1: &'static str, dep2: i32) -> impl Iterator<Item = i32> {
+        vec![1, 2, 3, dep1.len() as i32, dep2]
+            .into_iter()
+            .map(|x| x * 2)
+    }
+    assert_eq!(size_of::<Iterator1>(), size_of_val(&create("", 0).await));
+
+    let (mut tx, mut rx) = futures::channel::mpsc::channel(1);
+
+    tokio::spawn(async move {
+        let result: Result<Iterator1, std::io::Error> = Iterator1::new("hello", 100).await;
+        if let Ok(iter) = result {
+            tx.send(iter).await.unwrap();
+        } else {
+            assert!(false);
+        }
     });
 
     let mut iter = rx.next().await.unwrap();

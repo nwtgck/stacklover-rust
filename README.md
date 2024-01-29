@@ -146,11 +146,14 @@ https://github.com/nwtgck/stacklover-rust/blob/796c2dcff68032dbbc064314018565cb2
 
 Add `stacklover` to the `Cargo.toml`.
 
+###  Dependency
+
 ```toml
 [dependencies]
 stacklover = { git = "https://github.com/nwtgck/stacklover-rust.git", rev = "796c2dcff68032dbbc064314018565cb21d8c94f" }
 ```
 
+### Simple example
 Create by `YourStruct::new()` and access its inner value by `.as_ref()`, `.as_mut()` and `.into_inner()`. Here is an example.
 
 ```rust
@@ -187,6 +190,7 @@ fn main() {
 }
 ```
 
+### Async function example
 Async function can be used as well.
 
 ```rust
@@ -212,6 +216,50 @@ async fn main() {
 }
 ```
 
+### Wrapped type example
+You can store the wrapped type `T` in `Result<T>`.  Here is an example using a creation function that returns `Result<impl Iterator<...>>`, but the struct `IteratorI32` stores `impl Iterator<...>`.
+
+```rust
+stacklover::define_struct! {
+    IteratorI32,
+    // The function below returns Result but the inner value should be Iterator, not Result.
+    fn (i: i32) -> Result<impl Iterator<Item = i32>, std::io::Error> {
+        let iter = (1..i).map(|x| x * 3).take_while(|x| *x < 10);
+        Ok(iter)
+    },
+    // Specify parameters in the following order.
+    inner_type = impl Iterator<Item=i32>,
+    wrapped_type = Result<__Inner__, std::io::Error>, // Type paramter `__Inner__` is predefined in the macro.
+    to_wrapped_struct = |result, inner_to_struct| { result.map(inner_to_struct) },
+}
+
+// Use `IteratorI32` instead of complicated type.
+let result: Result<IteratorI32, std::io::Error> = IteratorI32::new(10);
+// Get IteratorI32 from Result by ?.
+let x: IteratorI32 = result?;
+```
+
+Here is an example with more nested type and async function.
+
+```rust
+stacklover::define_struct! {
+    IteratorI32,
+    async fn (i: i32) -> Result<(impl Iterator<Item = i32>, String, f32), std::io::Error> {
+        let iter = (1..i).map(|x| x * 3).take_while(|x| *x < 10);
+        Ok((iter, "hello".to_owned(), 3.14))
+    },
+    // Specify parameters in the following order.
+    inner_type = impl Iterator<Item=i32>,
+    wrapped_type = Result<(__Inner__, String, f32), std::io::Error>, // Type paramter `__Inner__` is predefined in the macro.
+    to_wrapped_struct = |result, inner_to_struct| { result.map(|(iter, s, f)| (inner_to_struct(iter), s, f)) },
+}
+
+let result: Result<(IteratorI32, String, f32), std::io::Error> = IteratorI32::new(10).await;
+// Get a tuple with IteratorI32 from Result by ?.
+let (iter, s, f): (IteratorI32, String, f32) = result?;
+```
+
+### Using attributes - auto_enums
 Attributes can be used. Here is an example using [`auto_enums`](https://github.com/taiki-e/auto_enums), which allows us to return different types without heap allocations.
 
 ```rust
@@ -239,6 +287,7 @@ fn main() {
 }
 ```
 
+### Define separately for IDE and formatter
 You can define the creation function separately. This may allow you to have better IDE and formatter support. 
 ```rust
 stacklover::define_struct! {
