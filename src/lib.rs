@@ -53,7 +53,7 @@ macro_rules! define_struct {
                     $($to_wrapped_struct_body)*
                 };
                 fn __stacklover_inner_to_struct_fn_param_unreachable<T, R>(_: impl Fn(T) -> R) -> T {
-                    unreachable!()
+                    ::core::unreachable!()
                 }
                 __stacklover_inner_to_struct_fn_param_unreachable(__stacklover_inner_to_struct_fn)
             }
@@ -201,7 +201,7 @@ macro_rules! define_struct {
                     $($to_wrapped_struct_body)*
                 };
                 fn __stacklover_inner_to_struct_fn_param_unreachable<T, R>(_: impl Fn(T) -> R) -> T {
-                    unreachable!()
+                    ::core::unreachable!()
                 }
                 __stacklover_inner_to_struct_fn_param_unreachable(__stacklover_inner_to_struct_fn)
             }
