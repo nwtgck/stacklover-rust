@@ -120,6 +120,8 @@ impl MyService {
 }
 ```
 
+stacklover also works with no_std.
+
 ## Performance
 
 Performance with `stacklover` is the same as with bare type.
