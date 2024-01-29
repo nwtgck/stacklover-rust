@@ -1,6 +1,6 @@
-use stacklover::wip_define_struct;
+use stacklover::define_struct;
 
-wip_define_struct! {
+define_struct! {
     Iterator1,
     fn (dep1: &'static str, dep2: i32) -> Result<impl Iterator<Item=i32>, std::io::Error> {
         let iter = (1..)

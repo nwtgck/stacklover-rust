@@ -4,7 +4,7 @@ use std::sync::{Arc, Mutex};
 
 #[test]
 fn it_works() {
-    stacklover::wip_define_struct! {
+    stacklover::define_struct! {
         // struct name to be defined
         Iterator1,
         fn (dep1: &str, dep2: i32) -> impl Iterator<Item=i32> {
@@ -35,7 +35,7 @@ fn it_works() {
 
 #[test]
 fn it_works_with_fn() {
-    stacklover::wip_define_struct! {
+    stacklover::define_struct! {
         MyFn,
         fn (s: String) -> impl Fn(i32) -> i32 {
             move |i: i32| { i + s.len() as i32 }
@@ -54,7 +54,7 @@ fn it_works_with_fn() {
 
 #[tokio::test]
 async fn it_works_without_dependency() {
-    stacklover::wip_define_struct! {
+    stacklover::define_struct! {
         // struct name to be defined
         Iterator1,
         // empty parameters
@@ -65,7 +65,7 @@ async fn it_works_without_dependency() {
         }
     }
 
-    stacklover::wip_define_struct! {
+    stacklover::define_struct! {
         // struct name to be defined
         Iterator2,
         // empty parameters
@@ -112,7 +112,7 @@ fn drops() {
         }
     }
 
-    stacklover::wip_define_struct! {
+    stacklover::define_struct! {
         MyStructStruct,
         fn (dropped: Arc<Mutex<u32>>) -> MyStruct {
             MyStruct{dropped}
@@ -146,13 +146,13 @@ async fn it_works_with_arc() {
     // Using Arc caused the error below in some implementation
     // error[E0080]: evaluation of constant value failed
     // using uninitialized data, but this operation requires initialized memory
-    stacklover::wip_define_struct! {
+    stacklover::define_struct! {
         MyArc1,
         fn (dep1: &str) -> Arc<String> {
             Arc::new(dep1.to_owned())
         }
     }
-    stacklover::wip_define_struct! {
+    stacklover::define_struct! {
         MyArc2,
         async fn (dep1: &str) -> Arc<String> {
             Arc::new(dep1.to_owned())
@@ -162,7 +162,7 @@ async fn it_works_with_arc() {
 
 #[test]
 fn it_works_with_auto_enum_attribute() {
-    stacklover::wip_define_struct! {
+    stacklover::define_struct! {
         AutoEnumIterator,
         #[auto_enums::auto_enum(Iterator)]
         fn (x: i32) -> impl Iterator<Item=i32> {
@@ -192,7 +192,7 @@ fn it_works_with_auto_enum_attribute() {
 
 #[tokio::test]
 async fn it_works_with_async() {
-    stacklover::wip_define_struct! {
+    stacklover::define_struct! {
         Iterator2,
         async fn (dep1: &'static str, dep2: i32) -> impl Iterator<Item=i32> {
             create(dep1, dep2).await
@@ -223,7 +223,7 @@ async fn it_works_with_async() {
 
 #[tokio::test]
 async fn it_works_with_async_auto_enum_attribute() {
-    stacklover::wip_define_struct! {
+    stacklover::define_struct! {
         AutoEnumIterator,
         #[auto_enums::auto_enum(Iterator)]
         async fn (x: i32) -> impl Iterator<Item=i32> {

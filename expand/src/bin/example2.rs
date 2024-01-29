@@ -1,4 +1,4 @@
-stacklover::wip_define_struct! {
+stacklover::define_struct! {
     Iterator1,
     async fn (dep1: &'static str, dep2: i32) -> impl Iterator<Item=i32> {
         (1..)
