@@ -19,6 +19,7 @@ const _: () = {
             .chain("HELLO".chars().map(|c| c as i32).flat_map(|i| [i, i - 65]))
             .chain([dep1.len() as i32, dep2])
     }
+    #[allow(unused)]
     #[allow(unreachable_code)]
     fn __stacklover_inner_unreachable() -> impl Iterator<Item = i32> {
         fn await_future_unreachable<T: ::core::future::Future<Output = O>, O>(
@@ -26,19 +27,18 @@ const _: () = {
         ) -> O {
             ::core::panicking::panic("internal error: entered unreachable code")
         }
-        let __stacklover_awaited_created_value = await_future_unreachable(
-            __stacklover_create(
-                ::core::panicking::panic("internal error: entered unreachable code"),
-                ::core::panicking::panic("internal error: entered unreachable code"),
-            ),
-        );
         let __stacklover_inner_to_struct_fn = |inner| Iterator1 {
             __private_inner: ::core::panicking::panic(
                 "internal error: entered unreachable code",
             ),
         };
         let _ = {
-            let created_value = __stacklover_awaited_created_value;
+            let created_value = await_future_unreachable(
+                __stacklover_create(
+                    ::core::panicking::panic("internal error: entered unreachable code"),
+                    ::core::panicking::panic("internal error: entered unreachable code"),
+                ),
+            );
             let inner_to_struct = __stacklover_inner_to_struct_fn;
             inner_to_struct(created_value)
         };
@@ -82,15 +82,13 @@ const _: () = {
             dep1: &'static str,
             dep2: i32,
         ) -> __StackloverWrappedType<Self> {
-            let __stacklover_awaited_created_value = __stacklover_create(dep1, dep2)
-                .await;
             let __stacklover_inner_to_struct_fn = |inner| Self {
                 __private_inner: unsafe {
                     ::core::mem::transmute::<_, [u8; Self::__SIZE]>(inner)
                 },
             };
             {
-                let created_value = __stacklover_awaited_created_value;
+                let created_value = __stacklover_create(dep1, dep2).await;
                 let inner_to_struct = __stacklover_inner_to_struct_fn;
                 inner_to_struct(created_value)
             }

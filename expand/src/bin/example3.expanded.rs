@@ -22,19 +22,19 @@ const _: () = {
             .chain([dep1.len() as i32, dep2]);
         Ok(iter)
     }
+    #[allow(unused)]
     #[allow(unreachable_code)]
     fn __stacklover_inner_unreachable() -> impl Iterator<Item = i32> {
-        let __stacklover_created_value = __stacklover_create(
-            ::core::panicking::panic("internal error: entered unreachable code"),
-            ::core::panicking::panic("internal error: entered unreachable code"),
-        );
         let __stacklover_inner_to_struct_fn = |inner| Iterator1 {
             __private_inner: ::core::panicking::panic(
                 "internal error: entered unreachable code",
             ),
         };
         let _ = {
-            let result = __stacklover_created_value;
+            let result = __stacklover_create(
+                ::core::panicking::panic("internal error: entered unreachable code"),
+                ::core::panicking::panic("internal error: entered unreachable code"),
+            );
             let inner_to_struct = __stacklover_inner_to_struct_fn;
             result.map(|inner| inner_to_struct(inner))
         };
@@ -73,14 +73,13 @@ const _: () = {
         };
         #[inline(always)]
         pub fn new(dep1: &'static str, dep2: i32) -> __StackloverWrappedType<Self> {
-            let __stacklover_created_value = __stacklover_create(dep1, dep2);
             let __stacklover_inner_to_struct_fn = |inner| Self {
                 __private_inner: unsafe {
                     ::core::mem::transmute::<_, [u8; Self::__SIZE]>(inner)
                 },
             };
             {
-                let result = __stacklover_created_value;
+                let result = __stacklover_create(dep1, dep2);
                 let inner_to_struct = __stacklover_inner_to_struct_fn;
                 result.map(|inner| inner_to_struct(inner))
             }

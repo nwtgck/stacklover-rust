@@ -40,14 +40,14 @@ macro_rules! define_struct {
                 $($create_fn_body)*
             }
 
+            #[allow(unused)]
             #[allow(unreachable_code)]
             fn __stacklover_inner_unreachable() -> $inner_type {
-                let __stacklover_created_value = __stacklover_create( $( $crate::__ident_to_unreachable!($param) ),* );
                 let __stacklover_inner_to_struct_fn = |inner| $struct_name {
                     __private_inner: ::core::unreachable!(),
                 };
                 let _ = {
-                    let $created_value = __stacklover_created_value;
+                    let $created_value = __stacklover_create( $( $crate::__ident_to_unreachable!($param) ),* );
                     let $inner_to_struct_fn = __stacklover_inner_to_struct_fn;
                     // For type inference of __stacklover_inner_to_struct_fn
                     $($to_wrapped_struct_body)*
@@ -80,14 +80,13 @@ macro_rules! define_struct {
 
                 #[inline(always)]
                 pub fn new( $( $param: $param_ty ),* ) -> __StackloverWrappedType<Self> {
-                    let __stacklover_created_value = __stacklover_create( $($param),* );
                     let __stacklover_inner_to_struct_fn = |inner| Self {
                         __private_inner: unsafe {
                             ::core::mem::transmute::<_, [u8; Self::__SIZE]>(inner)
                         },
                     };
                     {
-                        let $created_value = __stacklover_created_value;
+                        let $created_value = __stacklover_create( $($param),* );
                         let $inner_to_struct_fn = __stacklover_inner_to_struct_fn;
                         $($to_wrapped_struct_body)*
                     }
@@ -185,17 +184,17 @@ macro_rules! define_struct {
                 $($create_fn_body)*
             }
 
+            #[allow(unused)]
             #[allow(unreachable_code)]
             fn __stacklover_inner_unreachable() -> $inner_type {
                 fn await_future_unreachable<T: ::core::future::Future<Output = O>, O>(_: T) -> O {
                     ::core::unreachable!()
                 }
-                let __stacklover_awaited_created_value = await_future_unreachable(__stacklover_create( $( $crate::__ident_to_unreachable!($param) ),* ));
                 let __stacklover_inner_to_struct_fn = |inner| $struct_name {
                     __private_inner: ::core::unreachable!(),
                 };
                 let _ = {
-                    let $created_value = __stacklover_awaited_created_value;
+                    let $created_value = await_future_unreachable(__stacklover_create( $( $crate::__ident_to_unreachable!($param) ),* ));
                     let $inner_to_struct_fn = __stacklover_inner_to_struct_fn;
                     // For type inference of __stacklover_inner_to_struct_fn
                     $($to_wrapped_struct_body)*
@@ -228,14 +227,13 @@ macro_rules! define_struct {
 
                 #[inline(always)]
                 pub $async fn new( $($param: $param_ty ),* ) -> __StackloverWrappedType<Self> {
-                    let __stacklover_awaited_created_value = __stacklover_create( $($param),* ).await;
                     let __stacklover_inner_to_struct_fn = |inner| Self {
                         __private_inner: unsafe {
                             ::core::mem::transmute::<_, [u8; Self::__SIZE]>(inner)
                         },
                     };
                     {
-                        let $created_value = __stacklover_awaited_created_value;
+                        let $created_value = __stacklover_create( $($param),* ).await;
                         let $inner_to_struct_fn = __stacklover_inner_to_struct_fn;
                         $($to_wrapped_struct_body)*
                     }
