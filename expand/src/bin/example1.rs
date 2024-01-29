@@ -6,7 +6,7 @@ stacklover::wip_define_struct! {
             .take_while(|x| *x < 20)
             .chain("HELLO".chars().map(|c| c as i32).flat_map(|i| [i, i - 65]))
             .chain([dep1.len() as i32, dep2])
-    }
+    },
 }
 
 // cargo run --bin example1

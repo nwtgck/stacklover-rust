@@ -65,7 +65,7 @@ async fn it_works_without_dependency() {
         }
     }
 
-    stacklover::define_struct! {
+    stacklover::wip_define_struct! {
         // struct name to be defined
         Iterator2,
         // empty parameters
@@ -152,7 +152,7 @@ async fn it_works_with_arc() {
             Arc::new(dep1.to_owned())
         }
     }
-    stacklover::define_struct! {
+    stacklover::wip_define_struct! {
         MyArc2,
         async fn (dep1: &str) -> Arc<String> {
             Arc::new(dep1.to_owned())
@@ -192,7 +192,7 @@ fn it_works_with_auto_enum_attribute() {
 
 #[tokio::test]
 async fn it_works_with_async() {
-    stacklover::define_struct! {
+    stacklover::wip_define_struct! {
         Iterator2,
         async fn (dep1: &'static str, dep2: i32) -> impl Iterator<Item=i32> {
             create(dep1, dep2).await
@@ -223,7 +223,7 @@ async fn it_works_with_async() {
 
 #[tokio::test]
 async fn it_works_with_async_auto_enum_attribute() {
-    stacklover::define_struct! {
+    stacklover::wip_define_struct! {
         AutoEnumIterator,
         #[auto_enums::auto_enum(Iterator)]
         async fn (x: i32) -> impl Iterator<Item=i32> {

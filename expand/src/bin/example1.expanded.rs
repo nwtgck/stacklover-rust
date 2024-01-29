@@ -56,10 +56,13 @@ const _: () = {
         #[doc(hidden)]
         const __SIZE: usize = {
             #[allow(non_camel_case_types)]
-            const fn size_of_return_value<dep1, dep2, R>(
-                _: &(impl ::core::ops::Fn(dep1, dep2) -> __StackloverWrappedType<R>),
+            const fn size_of_return_value<dep1, dep2, __StackloverR>(
+                _: &(impl ::core::ops::Fn(
+                    dep1,
+                    dep2,
+                ) -> __StackloverWrappedType<__StackloverR>),
             ) -> usize {
-                ::core::mem::size_of::<R>()
+                ::core::mem::size_of::<__StackloverR>()
             }
             size_of_return_value(&__stacklover_create)
         };
