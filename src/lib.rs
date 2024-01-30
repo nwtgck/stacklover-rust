@@ -56,6 +56,13 @@ macro_rules! define_struct {
                 __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
             }
 
+            const _: () = {
+                fn _unused() {
+                    fn assert_static<T: 'static>(_: T) {}
+                    assert_static(__stacklover_inner_unreachable());
+                }
+            };
+
             impl $struct_name {
                 #[doc(hidden)]
                 const __SIZE: usize = {
@@ -194,6 +201,13 @@ macro_rules! define_struct {
                 }
                 __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
             }
+
+            const _: () = {
+                fn _unused() {
+                    fn assert_static<T: 'static>(_: T) {}
+                    assert_static(__stacklover_inner_unreachable());
+                }
+            };
 
             impl $struct_name {
                 #[doc(hidden)]

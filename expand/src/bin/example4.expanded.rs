@@ -40,6 +40,12 @@ const _: () = {
         }
         __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
     }
+    const _: () = {
+        fn _unused() {
+            fn assert_static<T: 'static>(_: T) {}
+            assert_static(__stacklover_inner_unreachable());
+        }
+    };
     impl I32 {
         #[doc(hidden)]
         const __SIZE: usize = {
