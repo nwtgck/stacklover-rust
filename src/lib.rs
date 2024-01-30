@@ -4,14 +4,14 @@ macro_rules! define_struct {
     (
         $struct_name:ident,
         $(#[$attrs:meta])*
-        fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* }
-        $(, impls = ( $($derive_trait:ident),* $(,)? ) )? $(,)?
+        fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
+        impls = ( $($derive_trait:ident),* $(,)? ) $(,)?
     ) => {
         $crate::define_struct!(
             $struct_name,
             $(#[$attrs])*
             fn ( $( $param: $param_ty ),* ) -> $create_fn_return_type { $($create_fn_body)* },
-            $( impls = ( $($derive_trait),* ), )?
+            impls = ( $($derive_trait),* ),
             inner_type = $create_fn_return_type,
             wrapped_type = __Inner__,
             to_wrapped_struct = |created_value, inner_to_struct| { inner_to_struct(created_value) },
@@ -22,16 +22,13 @@ macro_rules! define_struct {
         $struct_name:ident,
         $(#[$attrs:meta])*
         fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
-        $( impls = ( $($derive_trait:ident),* $(,)? ), )?
+        impls = ( $($derive_trait:ident),* $(,)? ),
         inner_type = $inner_type:ty,
         // wrapped_type should include __Inner__
         wrapped_type = $wrapped_type:ty,
         to_wrapped_struct = |$created_value:ident, $inner_to_struct_fn:ident| { $($to_wrapped_struct_body:tt)* } $(,)?
     ) => {
-        struct $struct_name {
-            #[doc(hidden)]
-            __private_inner: [u8; $struct_name::__SIZE]
-        }
+        $crate::__define_struct!($struct_name);
 
         const _: () = {
             type __StackloverWrappedType<__Inner__> = $wrapped_type;
@@ -59,15 +56,6 @@ macro_rules! define_struct {
                 __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
             }
 
-            const _: () = {
-                fn _unused() {
-                    // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
-                    // TODO: allow user to specify negative impl traits
-                    fn assert_traits<T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe + 'static>(_: T) {}
-                    assert_traits(__stacklover_inner_unreachable());
-                }
-            };
-
             impl $struct_name {
                 #[doc(hidden)]
                 const __SIZE: usize = {
@@ -84,6 +72,7 @@ macro_rules! define_struct {
                         __private_inner: unsafe {
                             ::core::mem::transmute::<_, [u8; Self::__SIZE]>(inner)
                         },
+                        __phantom: ::core::marker::PhantomData,
                     };
                     {
                         let $created_value = __stacklover_create( $($param),* );
@@ -145,21 +134,21 @@ macro_rules! define_struct {
                 }
             }
 
-            $( $crate::__impl_traits!($struct_name, $($derive_trait)*); )?
+            $crate::__impl_traits!($struct_name, $($derive_trait)*);
         };
     };
     // async create
     (
         $struct_name:ident,
         $(#[$attrs:meta])*
-        $async:ident fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* }
-        $(, impls = ( $($derive_trait:ident),* $(,)? ) )? $(,)?
+        $async:ident fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
+        impls = ( $($derive_trait:ident),* $(,)? ) $(,)?
     ) => {
         $crate::define_struct!(
             $struct_name,
             $(#[$attrs])*
             $async fn ( $( $param: $param_ty ),* ) -> $create_fn_return_type { $($create_fn_body)* },
-            $( impls = ( $($derive_trait),* ), )?
+            impls = ( $($derive_trait),* ),
             inner_type = $create_fn_return_type,
             wrapped_type = __Inner__,
             to_wrapped_struct = |created_value, inner_to_struct| { inner_to_struct(created_value) },
@@ -170,15 +159,13 @@ macro_rules! define_struct {
         $struct_name:ident,
         $(#[$attrs:meta])*
         $async:ident fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
-        $( impls = ( $($derive_trait:ident),* $(,)? ), )?
+        impls = ( $($derive_trait:ident),* $(,)? ),
         inner_type = $inner_type:ty,
         // wrapped_type should include __Inner__
         wrapped_type = $wrapped_type:ty,
         to_wrapped_struct = |$created_value:ident, $inner_to_struct_fn:ident| { $($to_wrapped_struct_body:tt)* } $(,)?
     ) => {
-        struct $struct_name {
-            __private_inner: [u8; $struct_name::__SIZE]
-        }
+        $crate::__define_struct!($struct_name);
 
         const _: () = {
             type __StackloverWrappedType<__Inner__> = $wrapped_type;
@@ -208,15 +195,6 @@ macro_rules! define_struct {
                 __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
             }
 
-            const _: () = {
-                fn _unused() {
-                    // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
-                    // TODO: allow user to specify negative impl traits
-                    fn assert_traits<T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe + 'static>(_: T) {}
-                    assert_traits(__stacklover_inner_unreachable());
-                }
-            };
-
             impl $struct_name {
                 #[doc(hidden)]
                 const __SIZE: usize = {
@@ -233,6 +211,7 @@ macro_rules! define_struct {
                         __private_inner: unsafe {
                             ::core::mem::transmute::<_, [u8; Self::__SIZE]>(inner)
                         },
+                        __phantom: ::core::marker::PhantomData,
                     };
                     {
                         let $created_value = __stacklover_create( $($param),* ).await;
@@ -294,8 +273,30 @@ macro_rules! define_struct {
                 }
             }
 
-            $( $crate::__impl_traits!($struct_name, $($derive_trait)*); )?
+            $crate::__impl_traits!($struct_name, $($derive_trait)*);
         };
+    };
+}
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __define_struct {
+    ( $struct_name:ident ) => {
+        struct $struct_name {
+            #[doc(hidden)]
+            __private_inner: [u8; $struct_name::__SIZE],
+            #[doc(hidden)]
+            __phantom: ::core::marker::PhantomData<(
+                // for !Send + !Sync by default
+                *const (),
+                // for !Unpin by default
+                ::core::marker::PhantomPinned,
+                // for !UnwindSafe by default
+                ::core::marker::PhantomData<&'static mut ()>,
+                // for !Sync + !RefUnwindSafe by default
+                ::core::marker::PhantomData<::core::cell::UnsafeCell<()>>,
+            )>,
+        }
     };
 }
 
@@ -311,6 +312,58 @@ macro_rules! __ident_to_unreachable {
 #[macro_export]
 macro_rules! __impl_traits {
     ( $struct_name:ident, ) => { };
+    // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
+    ( $struct_name:ident, Send $($xs:ident)* ) => {
+        const _: () = {
+            fn _unused() {
+                fn assert_trait<T: ::core::marker::Send>(_: T) {}
+                assert_trait(__stacklover_inner_unreachable());
+            }
+        };
+        unsafe impl ::core::marker::Send for $struct_name {}
+        $crate::__impl_traits!($struct_name, $($xs)*);
+    };
+    ( $struct_name:ident, Sync $($xs:ident)* ) => {
+        const _: () = {
+            fn _unused() {
+                fn assert_trait<T: ::core::marker::Sync>(_: T) {}
+                assert_trait(__stacklover_inner_unreachable());
+            }
+        };
+        unsafe impl ::core::marker::Sync for $struct_name {}
+        $crate::__impl_traits!($struct_name, $($xs)*);
+    };
+    ( $struct_name:ident, Unpin $($xs:ident)* ) => {
+        const _: () = {
+            fn _unused() {
+                fn assert_trait<T: ::core::marker::Unpin>(_: T) {}
+                assert_trait(__stacklover_inner_unreachable());
+            }
+        };
+        impl ::core::marker::Unpin for $struct_name {}
+        $crate::__impl_traits!($struct_name, $($xs)*);
+    };
+    ( $struct_name:ident, UnwindSafe $($xs:ident)* ) => {
+        const _: () = {
+            fn _unused() {
+                fn assert_trait<T: ::core::panic::UnwindSafe>(_: T) {}
+                assert_trait(__stacklover_inner_unreachable());
+            }
+        };
+        impl ::core::panic::UnwindSafe for $struct_name {}
+        $crate::__impl_traits!($struct_name, $($xs)*);
+    };
+    ( $struct_name:ident, RefUnwindSafe $($xs:ident)* ) => {
+        const _: () = {
+            fn _unused() {
+                fn assert_trait<T: ::core::panic::RefUnwindSafe>(_: T) {}
+                assert_trait(__stacklover_inner_unreachable());
+            }
+        };
+        impl ::core::panic::RefUnwindSafe for $struct_name {}
+        $crate::__impl_traits!($struct_name, $($xs)*);
+    };
+    // other traits
     ( $struct_name:ident, PartialEq $($xs:ident)* ) => {
         impl ::core::cmp::PartialEq for $struct_name {
             fn eq(&self, other: &Self) -> bool {
@@ -367,6 +420,7 @@ macro_rules! __impl_traits {
                     __private_inner: unsafe {
                         ::core::mem::transmute::<_, [u8; Self::__SIZE]>(cloned)
                     },
+                    __phantom: ::core::marker::PhantomData,
                 }
             }
         }

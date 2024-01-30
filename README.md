@@ -101,7 +101,8 @@ stacklover::define_struct! {
                 .chain([message.len() as i32])
                 .flat_map(|i| [i, i - 65]),
         )
-    }
+    },
+    impls = (Send, Sync),
 }
 
 struct MyService {
@@ -159,19 +160,26 @@ stacklover = { git = "https://github.com/nwtgck/stacklover-rust.git", rev = "764
 Create by `YourStruct::new()` and access its inner value by `.as_ref()`, `.as_mut()` and `.into_inner()`. Here is an example.
 
 ```rust
+use std::fmt::Debug;
+
 fn main() {
     // Use `define_struct!` everywhere `struct YourStruct;` can be used.
     stacklover::define_struct! {
         // Struct name to be defined.
         IteratorI32,
         // Note that the function below has no name.
-        fn (i: i32) -> impl Iterator<Item = i32> {
+        fn (i: i32) -> impl Iterator<Item = i32> + Debug {
             (1..i).map(|x| x * 3).take_while(|x| *x < 10)
-        }
+        },
+        impls = (Send, Sync, Debug),
     }
 
     // Use `IteratorI32` instead of complicated type.
     let mut x: IteratorI32 = IteratorI32::new(10);
+
+    println!("x={:?}", x);
+    // Output:
+    // x=TakeWhile { iter: Map { iter: 1..10 }, flag: false }
 
     println!("size_hint={:?}", x.as_ref().size_hint());
     // Output:
@@ -203,7 +211,8 @@ async fn main() {
         // async function
         async fn (i: i32) -> impl Iterator<Item = i32> {
             (1..i).map(|x| x * 3).take_while(|x| *x < 10)
-        }
+        },
+        impls = (Send, Sync),
     }
 
     let x: IteratorI32 = IteratorI32::new(10).await; // .await used
@@ -230,6 +239,7 @@ stacklover::define_struct! {
         Ok(iter)
     },
     // Specify parameters in the following order.
+    impls = (Send, Sync),
     inner_type = impl Iterator<Item=i32>,
     wrapped_type = Result<__Inner__, std::io::Error>, // Type paramter `__Inner__` is predefined in the macro.
     to_wrapped_struct = |result, inner_to_struct| { result.map(inner_to_struct) },
@@ -251,6 +261,7 @@ stacklover::define_struct! {
         Ok((iter, "hello".to_owned(), 3.14))
     },
     // Specify parameters in the following order.
+    impls = (Send, Sync),
     inner_type = impl Iterator<Item=i32>,
     wrapped_type = Result<(__Inner__, String, f32), std::io::Error>, // Type paramter `__Inner__` is predefined in the macro.
     to_wrapped_struct = |result, inner_to_struct| { result.map(|(iter, s, f)| (inner_to_struct(iter), s, f)) },
@@ -263,35 +274,12 @@ let (iter, s, f): (IteratorI32, String, f32) = result?;
 
 ### Implement trait example
 
-The following `Tuple1` implements `PartialEq`, `Eq` and `Debug` by specifying `impls = ( PartialEq, Eq, Debug )`. The inner type should implement the traits. 
-
-```rust
-stacklover::define_struct! {
-    Tuple1,
-    fn (dep1: &str, dep2: i32) -> (String, i32, bool) {
-        (dep1.to_owned(), dep2, false)
-    },
-    impls = ( PartialEq, Eq, Clone, Debug ),
-}
-```
-
-It also works with wrapped type: 
-
-```rust
-stacklover::define_struct! {
-    Tuple1,
-    fn (dep1: &str, dep2: i32) -> Result<impl PartialEq + Eq + Debug, std::io::Error> {
-        Ok((dep1.to_owned(), dep2, false))
-    },
-    // Specify parameters in the following order.
-    impls = ( PartialEq, Eq, Debug ),
-    inner_type = impl PartialEq + Eq + Debug,
-    wrapped_type = Result<__Inner__, std::io::Error>,
-    to_wrapped_struct = |result, inner_to_struct| { result.map(inner_to_struct) },
-}
-```
-
 In `impls = (...)` you can specify the following traits.
+* [Send](https://doc.rust-lang.org/std/marker/trait.Send.html)
+* [Sync](https://doc.rust-lang.org/std/marker/trait.Sync.html)
+* [Unpin](https://doc.rust-lang.org/std/marker/trait.Unpin.html)
+* [UnwindSafe](https://doc.rust-lang.org/std/panic/trait.UnwindSafe.html)
+* [RefUnwindSafe](https://doc.rust-lang.org/std/panic/trait.RefUnwindSafe.html)
 * [PartialEq](https://doc.rust-lang.org/std/cmp/trait.PartialEq.html)
 * [Eq](https://doc.rust-lang.org/std/cmp/trait.Eq.html)
 * [PartialOrd](https://doc.rust-lang.org/std/cmp/trait.PartialOrd.html)
@@ -300,6 +288,8 @@ In `impls = (...)` you can specify the following traits.
 * [Copy](https://doc.rust-lang.org/core/marker/trait.Copy.html)
 * [Hash](https://doc.rust-lang.org/std/hash/trait.Hash.html)
 * [Debug](https://doc.rust-lang.org/std/fmt/trait.Debug.html)
+
+At compile time, it is asserted whether the inner type implements the trait in `impls = (...)`. 
 
 ### Using attributes - auto_enums
 Attributes can be used. Here is an example using [`auto_enums`](https://github.com/taiki-e/auto_enums), which allows us to return different types without heap allocations.
@@ -314,7 +304,8 @@ fn main() {
                 0 => 1..10,
                 _ => vec![5, 10].into_iter(),
             }
-        }
+        },
+        impls = (),
     }
 
     let x1: AutoEnumIterator = AutoEnumIterator::new(0);
@@ -337,7 +328,8 @@ stacklover::define_struct! {
     fn (message: &str) -> impl Iterator<Item = i32> {
         // Call the function
         create_iter_i32(message)
-    }
+    },
+    impls = (),
 }
 
 // Define a creation function separately

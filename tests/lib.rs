@@ -2,6 +2,7 @@ use futures::{SinkExt as _, StreamExt as _};
 use std::fmt::Debug;
 use std::hash::Hash;
 use std::mem::size_of;
+use std::panic::{RefUnwindSafe, UnwindSafe};
 use std::sync::{Arc, Mutex};
 
 #[test]
@@ -11,7 +12,8 @@ fn it_works() {
         Iterator1,
         fn (dep1: &str, dep2: i32) -> impl Iterator<Item=i32> {
             create(dep1, dep2)
-        }
+        },
+        impls = (Send, Sync),
     }
     fn create(dep1: &str, dep2: i32) -> impl Iterator<Item = i32> {
         vec![1, 2, 3, dep1.len() as i32, dep2]
@@ -62,9 +64,25 @@ fn it_works_with_deriving_all() {
         fn (dep2: i32) -> i32 {
             dep2
         },
-        impls = ( PartialEq, Eq, PartialOrd, Ord, Clone, Hash, Debug ),
+        impls = ( Send, Sync, Unpin, UnwindSafe, RefUnwindSafe, PartialEq, Eq, PartialOrd, Ord, Clone, Hash, Debug, ),
     }
-    fn assert_traits<T: PartialEq + Eq + PartialOrd + Ord + Clone + Hash + Debug>(_: &T) {}
+    fn assert_traits<
+        T: Send
+            + Sync
+            + Unpin
+            + UnwindSafe
+            + RefUnwindSafe
+            + PartialEq
+            + Eq
+            + PartialOrd
+            + Ord
+            + Clone
+            + Hash
+            + Debug,
+    >(
+        _: &T,
+    ) {
+    }
 
     let x: I32 = I32::new(100);
     let bare = 100;
@@ -82,6 +100,7 @@ fn it_works_with_wrap_params() {
             let iter = create(dep1, dep2);
             Ok(iter)
         },
+        impls = (Send),
         inner_type = impl Iterator<Item=i32>,
         wrapped_type = Result<__Inner__, std::io::Error>,
         to_wrapped_struct = |result, inner_to_struct| { result.map(inner_to_struct) },
@@ -141,7 +160,8 @@ fn it_works_with_fn() {
         MyFn,
         fn (s: String) -> impl Fn(i32) -> i32 {
             move |i: i32| { i + s.len() as i32 }
-        }
+        },
+        impls = (Send),
     }
     let (tx, rx) = std::sync::mpsc::channel();
     std::thread::spawn(move || {
@@ -164,7 +184,8 @@ async fn it_works_without_dependency() {
             vec![1, 2, 3]
             .into_iter()
             .map(|x| x * 2)
-        }
+        },
+        impls = (Send, Sync),
     }
 
     stacklover::define_struct! {
@@ -175,7 +196,8 @@ async fn it_works_without_dependency() {
             vec![1, 2, 3]
             .into_iter()
             .map(|x| x * 2)
-        }
+        },
+        impls = (Send, Sync),
     }
 
     {
@@ -218,7 +240,8 @@ fn drops() {
         MyStructStruct,
         fn (dropped: Arc<Mutex<u32>>) -> MyStruct {
             MyStruct{dropped}
-        }
+        },
+        impls = (),
     }
 
     {
@@ -252,13 +275,15 @@ async fn it_works_with_arc() {
         MyArc1,
         fn (dep1: &str) -> Arc<String> {
             Arc::new(dep1.to_owned())
-        }
+        },
+        impls = (),
     }
     stacklover::define_struct! {
         MyArc2,
         async fn (dep1: &str) -> Arc<String> {
             Arc::new(dep1.to_owned())
-        }
+        },
+        impls = (),
     }
 }
 
@@ -272,7 +297,8 @@ fn it_works_with_auto_enum_attribute() {
                 0 => 1..10,
                 _ => vec![5, 10].into_iter(),
             }
-        }
+        },
+        impls = (Send, Sync),
     }
 
     let (tx, rx) = std::sync::mpsc::channel();
@@ -299,7 +325,8 @@ async fn it_works_with_async() {
         async fn (dep1: &'static str, dep2: i32) -> impl Iterator<Item=i32> {
             tokio::time::sleep(tokio::time::Duration::from_nanos(0)).await;
             create(dep1, dep2).await
-        }
+        },
+        impls = (Send),
     }
     async fn create(dep1: &'static str, dep2: i32) -> impl Iterator<Item = i32> {
         vec![1, 2, 3, dep1.len() as i32, dep2]
@@ -352,6 +379,7 @@ async fn it_works_with_async_fn_and_wrap_params() {
             let iter = create(dep1, dep2).await;
             Ok(iter)
         },
+        impls = (Send),
         inner_type = impl Iterator<Item=i32>,
         wrapped_type = Result<__Inner__, std::io::Error>,
         to_wrapped_struct = |result, inner_to_struct| { result.map(inner_to_struct) },
@@ -416,7 +444,8 @@ async fn it_works_with_async_auto_enum_attribute() {
                 0 => 1..10,
                 _ => vec![5, 10].into_iter(),
             }
-        }
+        },
+        impls = (Send),
     }
 
     let (mut tx, mut rx) = futures::channel::mpsc::channel(1);

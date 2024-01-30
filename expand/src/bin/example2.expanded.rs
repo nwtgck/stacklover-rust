@@ -4,7 +4,17 @@ use std::prelude::rust_2021::*;
 #[macro_use]
 extern crate std;
 struct Iterator1 {
+    #[doc(hidden)]
     __private_inner: [u8; Iterator1::__SIZE],
+    #[doc(hidden)]
+    __phantom: ::core::marker::PhantomData<
+        (
+            *const (),
+            ::core::marker::PhantomPinned,
+            ::core::marker::PhantomData<&'static mut ()>,
+            ::core::marker::PhantomData<::core::cell::UnsafeCell<()>>,
+        ),
+    >,
 }
 const _: () = {
     type __StackloverWrappedType<__Inner__> = __Inner__;
@@ -12,7 +22,7 @@ const _: () = {
     async fn __stacklover_create(
         dep1: &'static str,
         dep2: i32,
-    ) -> impl Iterator<Item = i32> {
+    ) -> impl Iterator<Item = i32> + Clone {
         (1..)
             .map(|x| x * 3)
             .take_while(|x| *x < 20)
@@ -21,7 +31,7 @@ const _: () = {
     }
     #[allow(unused)]
     #[allow(unreachable_code)]
-    fn __stacklover_inner_unreachable() -> impl Iterator<Item = i32> {
+    fn __stacklover_inner_unreachable() -> impl Iterator<Item = i32> + Clone {
         fn __stacklover_await_future_unreachable<
             T: ::core::future::Future<Output = O>,
             O,
@@ -46,15 +56,6 @@ const _: () = {
         }
         __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
     }
-    const _: () = {
-        fn _unused() {
-            fn assert_traits<
-                T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin
-                    + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe + 'static,
-            >(_: T) {}
-            assert_traits(__stacklover_inner_unreachable());
-        }
-    };
     impl Iterator1 {
         #[doc(hidden)]
         const __SIZE: usize = {
@@ -80,6 +81,7 @@ const _: () = {
                 __private_inner: unsafe {
                     ::core::mem::transmute::<_, [u8; Self::__SIZE]>(inner)
                 },
+                __phantom: ::core::marker::PhantomData,
             };
             {
                 let created_value = __stacklover_create(dep1, dep2).await;
@@ -88,7 +90,7 @@ const _: () = {
             }
         }
         #[inline(always)]
-        pub fn as_ref(&self) -> &(impl Iterator<Item = i32>) {
+        pub fn as_ref(&self) -> &(impl Iterator<Item = i32> + Clone) {
             if true {
                 unsafe {
                     ::core::mem::transmute::<
@@ -105,7 +107,7 @@ const _: () = {
             }
         }
         #[inline(always)]
-        pub fn as_mut(&mut self) -> &mut (impl Iterator<Item = i32>) {
+        pub fn as_mut(&mut self) -> &mut (impl Iterator<Item = i32> + Clone) {
             if true {
                 unsafe {
                     ::core::mem::transmute::<
@@ -122,7 +124,7 @@ const _: () = {
             }
         }
         #[inline(always)]
-        pub fn into_inner(self) -> impl Iterator<Item = i32> {
+        pub fn into_inner(self) -> impl Iterator<Item = i32> + Clone {
             let inner = if true {
                 unsafe {
                     ::core::mem::transmute::<[u8; Self::__SIZE], _>(self.__private_inner)
@@ -144,6 +146,31 @@ const _: () = {
             } else {
                 #[allow(unreachable_code)] __stacklover_inner_unreachable()
             };
+        }
+    }
+    const _: () = {
+        fn _unused() {
+            fn assert_trait<T: ::core::marker::Send>(_: T) {}
+            assert_trait(__stacklover_inner_unreachable());
+        }
+    };
+    unsafe impl ::core::marker::Send for Iterator1 {}
+    const _: () = {
+        fn _unused() {
+            fn assert_trait<T: ::core::marker::Sync>(_: T) {}
+            assert_trait(__stacklover_inner_unreachable());
+        }
+    };
+    unsafe impl ::core::marker::Sync for Iterator1 {}
+    impl ::core::clone::Clone for Iterator1 {
+        fn clone(&self) -> Self {
+            let cloned = ::core::clone::Clone::clone(Iterator1::as_ref(self));
+            Self {
+                __private_inner: unsafe {
+                    ::core::mem::transmute::<_, [u8; Self::__SIZE]>(cloned)
+                },
+                __phantom: ::core::marker::PhantomData,
+            }
         }
     }
 };

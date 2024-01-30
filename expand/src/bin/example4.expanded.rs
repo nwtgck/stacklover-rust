@@ -6,6 +6,15 @@ extern crate std;
 struct I32 {
     #[doc(hidden)]
     __private_inner: [u8; I32::__SIZE],
+    #[doc(hidden)]
+    __phantom: ::core::marker::PhantomData<
+        (
+            *const (),
+            ::core::marker::PhantomPinned,
+            ::core::marker::PhantomData<&'static mut ()>,
+            ::core::marker::PhantomData<::core::cell::UnsafeCell<()>>,
+        ),
+    >,
 }
 const _: () = {
     type __StackloverWrappedType<__Inner__> = __Inner__;
@@ -31,15 +40,6 @@ const _: () = {
         }
         __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
     }
-    const _: () = {
-        fn _unused() {
-            fn assert_traits<
-                T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin
-                    + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe + 'static,
-            >(_: T) {}
-            assert_traits(__stacklover_inner_unreachable());
-        }
-    };
     impl I32 {
         #[doc(hidden)]
         const __SIZE: usize = {
@@ -59,6 +59,7 @@ const _: () = {
                 __private_inner: unsafe {
                     ::core::mem::transmute::<_, [u8; Self::__SIZE]>(inner)
                 },
+                __phantom: ::core::marker::PhantomData,
             };
             {
                 let created_value = __stacklover_create(dep2);
@@ -166,6 +167,7 @@ const _: () = {
                 __private_inner: unsafe {
                     ::core::mem::transmute::<_, [u8; Self::__SIZE]>(cloned)
                 },
+                __phantom: ::core::marker::PhantomData,
             }
         }
     }

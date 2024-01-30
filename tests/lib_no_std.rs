@@ -8,7 +8,8 @@ fn it_works_with_no_std() {
         Iterator1,
         fn (dep1: &str, dep2: i32) -> impl Iterator<Item=i32> {
             create(dep1, dep2)
-        }
+        },
+        impls = (Send, Sync),
     }
     fn create(dep1: &str, dep2: i32) -> impl Iterator<Item = i32> {
         [1, 2, 3, dep1.len() as i32, dep2]

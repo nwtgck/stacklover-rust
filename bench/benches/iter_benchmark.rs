@@ -17,7 +17,8 @@ fn criterion_benchmark(c: &mut Criterion) {
             Iterator1,
             fn () -> impl Iterator<Item=i64> {
                 iter_i64()
-            }
+            },
+            impls = (),
         }
         b.iter(|| Iterator1::new().into_inner().sum::<i64>())
     });
