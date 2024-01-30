@@ -261,9 +261,9 @@ let result: Result<(IteratorI32, String, f32), std::io::Error> = IteratorI32::ne
 let (iter, s, f): (IteratorI32, String, f32) = result?;
 ```
 
-### Derive example
+### Implement trait example
 
-The following `Tuple1` implements `PartialEq`, `Eq` and `Debug` by specifying `derive = ( PartialEq, Eq, Debug )`. The inner type should implement the traits. 
+The following `Tuple1` implements `PartialEq`, `Eq` and `Debug` by specifying `impls = ( PartialEq, Eq, Debug )`. The inner type should implement the traits. 
 
 ```rust
 stacklover::define_struct! {
@@ -271,7 +271,7 @@ stacklover::define_struct! {
     fn (dep1: &str, dep2: i32) -> (String, i32, bool) {
         (dep1.to_owned(), dep2, false)
     },
-    derive = ( PartialEq, Eq, Clone, Debug ),
+    impls = ( PartialEq, Eq, Clone, Debug ),
 }
 ```
 
@@ -284,14 +284,14 @@ stacklover::define_struct! {
         Ok((dep1.to_owned(), dep2, false))
     },
     // Specify parameters in the following order.
-    derive = ( PartialEq, Eq, Debug ),
+    impls = ( PartialEq, Eq, Debug ),
     inner_type = impl PartialEq + Eq + Debug,
     wrapped_type = Result<__Inner__, std::io::Error>,
     to_wrapped_struct = |result, inner_to_struct| { result.map(inner_to_struct) },
 }
 ```
 
-In `derive = (...)` you can specify the following traits.
+In `impls = (...)` you can specify the following traits.
 * [PartialEq](https://doc.rust-lang.org/std/cmp/trait.PartialEq.html)
 * [Eq](https://doc.rust-lang.org/std/cmp/trait.Eq.html)
 * [PartialOrd](https://doc.rust-lang.org/std/cmp/trait.PartialOrd.html)

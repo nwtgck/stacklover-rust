@@ -5,13 +5,13 @@ macro_rules! define_struct {
         $struct_name:ident,
         $(#[$attrs:meta])*
         fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* }
-        $(, derive = ( $($derive_trait:ident),* $(,)? ) )? $(,)?
+        $(, impls = ( $($derive_trait:ident),* $(,)? ) )? $(,)?
     ) => {
         $crate::define_struct!(
             $struct_name,
             $(#[$attrs])*
             fn ( $( $param: $param_ty ),* ) -> $create_fn_return_type { $($create_fn_body)* },
-            $( derive = ( $($derive_trait),* ), )?
+            $( impls = ( $($derive_trait),* ), )?
             inner_type = $create_fn_return_type,
             wrapped_type = __Inner__,
             to_wrapped_struct = |created_value, inner_to_struct| { inner_to_struct(created_value) },
@@ -22,7 +22,7 @@ macro_rules! define_struct {
         $struct_name:ident,
         $(#[$attrs:meta])*
         fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
-        $( derive = ( $($derive_trait:ident),* $(,)? ), )?
+        $( impls = ( $($derive_trait:ident),* $(,)? ), )?
         inner_type = $inner_type:ty,
         // wrapped_type should include __Inner__
         wrapped_type = $wrapped_type:ty,
@@ -145,7 +145,7 @@ macro_rules! define_struct {
                 }
             }
 
-            $( $crate::__derive_traits!($struct_name, $($derive_trait)*); )?
+            $( $crate::__impl_traits!($struct_name, $($derive_trait)*); )?
         };
     };
     // async create
@@ -153,13 +153,13 @@ macro_rules! define_struct {
         $struct_name:ident,
         $(#[$attrs:meta])*
         $async:ident fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* }
-        $(, derive = ( $($derive_trait:ident),* $(,)? ) )? $(,)?
+        $(, impls = ( $($derive_trait:ident),* $(,)? ) )? $(,)?
     ) => {
         $crate::define_struct!(
             $struct_name,
             $(#[$attrs])*
             $async fn ( $( $param: $param_ty ),* ) -> $create_fn_return_type { $($create_fn_body)* },
-            $( derive = ( $($derive_trait),* ), )?
+            $( impls = ( $($derive_trait),* ), )?
             inner_type = $create_fn_return_type,
             wrapped_type = __Inner__,
             to_wrapped_struct = |created_value, inner_to_struct| { inner_to_struct(created_value) },
@@ -170,7 +170,7 @@ macro_rules! define_struct {
         $struct_name:ident,
         $(#[$attrs:meta])*
         $async:ident fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
-        $( derive = ( $($derive_trait:ident),* $(,)? ), )?
+        $( impls = ( $($derive_trait:ident),* $(,)? ), )?
         inner_type = $inner_type:ty,
         // wrapped_type should include __Inner__
         wrapped_type = $wrapped_type:ty,
@@ -294,7 +294,7 @@ macro_rules! define_struct {
                 }
             }
 
-            $( $crate::__derive_traits!($struct_name, $($derive_trait)*); )?
+            $( $crate::__impl_traits!($struct_name, $($derive_trait)*); )?
         };
     };
 }
@@ -309,7 +309,7 @@ macro_rules! __ident_to_unreachable {
 
 #[doc(hidden)]
 #[macro_export]
-macro_rules! __derive_traits {
+macro_rules! __impl_traits {
     ( $struct_name:ident, ) => { };
     ( $struct_name:ident, PartialEq $($xs:ident)* ) => {
         impl ::core::cmp::PartialEq for $struct_name {
@@ -321,11 +321,11 @@ macro_rules! __derive_traits {
                 ::core::cmp::PartialEq::ne($struct_name::as_ref(self), $struct_name::as_ref(other))
             }
         }
-        $crate::__derive_traits!($struct_name, $($xs)*);
+        $crate::__impl_traits!($struct_name, $($xs)*);
     };
     ( $struct_name:ident, Eq $($xs:ident)* ) => {
         impl ::core::cmp::Eq for $struct_name {}
-        $crate::__derive_traits!($struct_name, $($xs)*);
+        $crate::__impl_traits!($struct_name, $($xs)*);
     };
     ( $struct_name:ident, PartialOrd $($xs:ident)* ) => {
         impl ::core::cmp::PartialOrd for $struct_name {
@@ -349,7 +349,7 @@ macro_rules! __derive_traits {
                 ::core::cmp::PartialOrd::ge($struct_name::as_ref(self), $struct_name::as_ref(other))
             }
         }
-        $crate::__derive_traits!($struct_name, $($xs)*);
+        $crate::__impl_traits!($struct_name, $($xs)*);
     };
     ( $struct_name:ident, Ord $($xs:ident)* ) => {
         impl ::core::cmp::Ord for $struct_name {
@@ -357,7 +357,7 @@ macro_rules! __derive_traits {
                 ::core::cmp::Ord::cmp($struct_name::as_ref(self), $struct_name::as_ref(other))
             }
         }
-        $crate::__derive_traits!($struct_name, $($xs)*);
+        $crate::__impl_traits!($struct_name, $($xs)*);
     };
     ( $struct_name:ident, Clone $($xs:ident)* ) => {
         impl ::core::clone::Clone for $struct_name {
@@ -370,7 +370,7 @@ macro_rules! __derive_traits {
                 }
             }
         }
-        $crate::__derive_traits!($struct_name, $($xs)*);
+        $crate::__impl_traits!($struct_name, $($xs)*);
     };
     // NOTE: `Copy`: the trait `Copy` cannot be implemented for this type; the type has a destructor
     ( $struct_name:ident, Hash $($xs:ident)* ) => {
@@ -379,7 +379,7 @@ macro_rules! __derive_traits {
                 ::core::hash::Hash::hash($struct_name::as_ref(self), state)
             }
         }
-        $crate::__derive_traits!($struct_name, $($xs)*);
+        $crate::__impl_traits!($struct_name, $($xs)*);
     };
     ( $struct_name:ident, Debug $($xs:ident)* ) => {
         impl ::core::fmt::Debug for $struct_name {
@@ -387,6 +387,6 @@ macro_rules! __derive_traits {
                 ::core::fmt::Debug::fmt($struct_name::as_ref(self), f)
             }
         }
-        $crate::__derive_traits!($struct_name, $($xs)*);
+        $crate::__impl_traits!($struct_name, $($xs)*);
     };
 }

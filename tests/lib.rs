@@ -42,7 +42,7 @@ fn it_works_with_deriving() {
         fn (dep1: &str, dep2: i32) -> (String, i32, bool) {
             create(dep1, dep2)
         },
-        derive = ( PartialEq, Eq, Clone, Debug ),
+        impls = ( PartialEq, Eq, Clone, Debug ),
     }
     fn create(dep1: &str, dep2: i32) -> (String, i32, bool) {
         (dep1.to_owned(), dep2, false)
@@ -62,7 +62,7 @@ fn it_works_with_deriving_all() {
         fn (dep2: i32) -> i32 {
             dep2
         },
-        derive = ( PartialEq, Eq, PartialOrd, Ord, Clone, Hash, Debug ),
+        impls = ( PartialEq, Eq, PartialOrd, Ord, Clone, Hash, Debug ),
     }
     fn assert_traits<T: PartialEq + Eq + PartialOrd + Ord + Clone + Hash + Debug>(_: &T) {}
 
@@ -119,7 +119,7 @@ fn it_works_with_deriving_traits_and_wrap_params() {
         fn (dep1: &str, dep2: i32) -> Result<impl PartialEq + Eq + Debug, std::io::Error> {
             Ok(create(dep1, dep2))
         },
-        derive = ( PartialEq, Eq, Debug ),
+        impls = ( PartialEq, Eq, Debug ),
         inner_type = impl PartialEq + Eq + Debug,
         wrapped_type = Result<__Inner__, std::io::Error>,
         to_wrapped_struct = |result, inner_to_struct| { result.map(inner_to_struct) },
@@ -331,7 +331,7 @@ async fn it_works_with_async_and_deriving() {
         async fn (dep1: &str, dep2: i32) -> impl PartialEq + Eq + Debug {
             create(dep1, dep2)
         },
-        derive = ( PartialEq, Eq, Debug ),
+        impls = ( PartialEq, Eq, Debug ),
     }
     fn create(dep1: &str, dep2: i32) -> impl PartialEq + Eq + Debug {
         (dep1.to_owned(), dep2, false)
@@ -390,7 +390,7 @@ async fn it_works_with_async_and_deriving_traits_and_wrap_params() {
         async fn (dep1: &str, dep2: i32) -> Result<impl PartialEq + Eq + Debug, std::io::Error> {
             Ok(create(dep1, dep2))
         },
-        derive = ( PartialEq, Eq, Debug ),
+        impls = ( PartialEq, Eq, Debug ),
         inner_type = impl PartialEq + Eq + Debug,
         wrapped_type = Result<__Inner__, std::io::Error>,
         to_wrapped_struct = |result, inner_to_struct| { result.map(inner_to_struct) },

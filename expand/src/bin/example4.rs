@@ -3,7 +3,7 @@ stacklover::define_struct! {
     fn (dep2: i32) -> i32 {
         dep2
     },
-    derive = ( PartialEq, Eq, PartialOrd, Ord, Clone, Hash, Debug ),
+    impls = ( PartialEq, Eq, PartialOrd, Ord, Clone, Hash, Debug ),
 }
 
 // cargo run --bin example4
