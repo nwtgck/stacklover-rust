@@ -41,16 +41,15 @@ const _: () = {
         }
         __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
     }
-    #[allow(unused)]
-    fn __stacklover_assert_traits() {
-        fn assert_traits<
-            T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin
-                + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe + 'static,
-        >(x: T) -> T {
-            x
+    const _: () = {
+        fn _unused() {
+            fn assert_traits<
+                T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin
+                    + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe + 'static,
+            >(_: T) {}
+            assert_traits(__stacklover_inner_unreachable());
         }
-        assert_traits(__stacklover_inner_unreachable());
-    }
+    };
     impl Iterator1 {
         #[doc(hidden)]
         const __SIZE: usize = {

@@ -59,15 +59,14 @@ macro_rules! define_struct {
                 __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
             }
 
-            #[allow(unused)]
-            fn __stacklover_assert_traits() {
-                // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
-                // TODO: allow user to specify traits
-                fn assert_traits<T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe + 'static>(x: T) -> T {
-                    x
+            const _: () = {
+                fn _unused() {
+                    // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
+                    // TODO: allow user to specify negative impl traits
+                    fn assert_traits<T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe + 'static>(_: T) {}
+                    assert_traits(__stacklover_inner_unreachable());
                 }
-                assert_traits(__stacklover_inner_unreachable());
-            }
+            };
 
             impl $struct_name {
                 #[doc(hidden)]
@@ -193,12 +192,12 @@ macro_rules! define_struct {
             #[allow(unused)]
             #[allow(unreachable_code)]
             fn __stacklover_inner_unreachable() -> $inner_type {
-                fn await_future_unreachable<T: ::core::future::Future<Output = O>, O>(_: T) -> O {
+                fn __stacklover_await_future_unreachable<T: ::core::future::Future<Output = O>, O>(_: T) -> O {
                     ::core::unreachable!()
                 }
                 let __stacklover_inner_to_struct_fn_unreachable = |inner| -> $struct_name { ::core::unreachable!() };
                 let _ = {
-                    let $created_value = await_future_unreachable(__stacklover_create( $( $crate::__ident_to_unreachable!($param) ),* ));
+                    let $created_value = __stacklover_await_future_unreachable(__stacklover_create( $( $crate::__ident_to_unreachable!($param) ),* ));
                     let $inner_to_struct_fn = __stacklover_inner_to_struct_fn_unreachable;
                     // For type inference of __stacklover_inner_to_struct_fn_unreachable
                     $($to_wrapped_struct_body)*
@@ -209,15 +208,14 @@ macro_rules! define_struct {
                 __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
             }
 
-            #[allow(unused)]
-            fn __stacklover_assert_traits() {
-                // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
-                // TODO: allow user to specify traits
-                fn assert_traits<T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe + 'static>(x: T) -> T {
-                    x
+            const _: () = {
+                fn _unused() {
+                    // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
+                    // TODO: allow user to specify negative impl traits
+                    fn assert_traits<T: ::core::marker::Send + ::core::marker::Sync + ::core::marker::Unpin + ::core::panic::UnwindSafe + ::core::panic::RefUnwindSafe + 'static>(_: T) {}
+                    assert_traits(__stacklover_inner_unreachable());
                 }
-                assert_traits(__stacklover_inner_unreachable());
-            }
+            };
 
             impl $struct_name {
                 #[doc(hidden)]
@@ -316,11 +314,11 @@ macro_rules! __derive_traits {
     ( $struct_name:ident, PartialEq $($xs:ident)* ) => {
         impl ::core::cmp::PartialEq for $struct_name {
             fn eq(&self, other: &Self) -> bool {
-                self.as_ref().eq(other.as_ref())
+                ::core::cmp::PartialEq::eq($struct_name::as_ref(self), $struct_name::as_ref(other))
             }
 
             fn ne(&self, other: &Self) -> bool {
-                self.as_ref().ne(other.as_ref())
+                ::core::cmp::PartialEq::ne($struct_name::as_ref(self), $struct_name::as_ref(other))
             }
         }
         $crate::__derive_traits!($struct_name, $($xs)*);
@@ -332,31 +330,31 @@ macro_rules! __derive_traits {
     ( $struct_name:ident, PartialOrd $($xs:ident)* ) => {
         impl ::core::cmp::PartialOrd for $struct_name {
             fn partial_cmp(&self, other: &Self) -> ::core::option::Option<::core::cmp::Ordering> {
-                self.as_ref().partial_cmp(other.as_ref())
+                ::core::cmp::PartialOrd::partial_cmp($struct_name::as_ref(self), $struct_name::as_ref(other))
             }
 
             fn lt(&self, other: &Self) -> bool {
-                self.as_ref().lt(other.as_ref())
+                ::core::cmp::PartialOrd::lt($struct_name::as_ref(self), $struct_name::as_ref(other))
             }
 
             fn le(&self, other: &Self) -> bool {
-                self.as_ref().le(other.as_ref())
+                ::core::cmp::PartialOrd::le($struct_name::as_ref(self), $struct_name::as_ref(other))
             }
 
             fn gt(&self, other: &Self) -> bool {
-                self.as_ref().gt(other.as_ref())
+                ::core::cmp::PartialOrd::gt($struct_name::as_ref(self), $struct_name::as_ref(other))
             }
 
             fn ge(&self, other: &Self) -> bool {
-                self.as_ref().ge(other.as_ref())
+                ::core::cmp::PartialOrd::ge($struct_name::as_ref(self), $struct_name::as_ref(other))
             }
         }
         $crate::__derive_traits!($struct_name, $($xs)*);
     };
     ( $struct_name:ident, Ord $($xs:ident)* ) => {
-        impl ::core::cmp::Ord for MyStruct {
+        impl ::core::cmp::Ord for $struct_name {
             fn cmp(&self, other: &Self) -> ::core::cmp::Ordering {
-                self.as_ref().cmp(other.as_ref())
+                ::core::cmp::Ord::cmp($struct_name::as_ref(self), $struct_name::as_ref(other))
             }
         }
         $crate::__derive_traits!($struct_name, $($xs)*);
@@ -364,7 +362,7 @@ macro_rules! __derive_traits {
     ( $struct_name:ident, Clone $($xs:ident)* ) => {
         impl ::core::clone::Clone for $struct_name {
             fn clone(&self) -> Self {
-                let cloned = ::core::clone::Clone::clone(self.as_ref());
+                let cloned = ::core::clone::Clone::clone($struct_name::as_ref(self));
                 Self {
                     __private_inner: unsafe {
                         ::core::mem::transmute::<_, [u8; Self::__SIZE]>(cloned)
@@ -374,14 +372,11 @@ macro_rules! __derive_traits {
         }
         $crate::__derive_traits!($struct_name, $($xs)*);
     };
-    ( $struct_name:ident, Copy $($xs:ident)* ) => {
-        impl ::core::marker::Copy for $struct_name {}
-        $crate::__derive_traits!($struct_name, $($xs)*);
-    };
+    // NOTE: `Copy`: the trait `Copy` cannot be implemented for this type; the type has a destructor
     ( $struct_name:ident, Hash $($xs:ident)* ) => {
         impl ::core::hash::Hash for $struct_name {
             fn hash<H: ::core::hash::Hasher>(&self, state: &mut H) {
-                self.as_ref().hash(state);
+                ::core::hash::Hash::hash($struct_name::as_ref(self), state)
             }
         }
         $crate::__derive_traits!($struct_name, $($xs)*);
@@ -389,7 +384,7 @@ macro_rules! __derive_traits {
     ( $struct_name:ident, Debug $($xs:ident)* ) => {
         impl ::core::fmt::Debug for $struct_name {
             fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                self.as_ref().fmt(f)
+                ::core::fmt::Debug::fmt($struct_name::as_ref(self), f)
             }
         }
         $crate::__derive_traits!($struct_name, $($xs)*);

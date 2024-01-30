@@ -1,5 +1,6 @@
 use futures::{SinkExt as _, StreamExt as _};
 use std::fmt::Debug;
+use std::hash::Hash;
 use std::mem::size_of;
 use std::sync::{Arc, Mutex};
 
@@ -49,6 +50,25 @@ fn it_works_with_deriving() {
 
     let x: Tuple1 = Tuple1::new("hello", 100);
     let bare = create("hello", 100);
+    assert_eq!(format!("{:?}", x), format!("{:?}", bare));
+    assert_eq!(x, x);
+    assert_eq!(x.clone().into_inner(), x.into_inner());
+}
+
+#[test]
+fn it_works_with_deriving_all() {
+    stacklover::define_struct! {
+        I32,
+        fn (dep2: i32) -> i32 {
+            dep2
+        },
+        derive = ( PartialEq, Eq, PartialOrd, Ord, Clone, Hash, Debug ),
+    }
+    fn assert_traits<T: PartialEq + Eq + PartialOrd + Ord + Clone + Hash + Debug>(_: &T) {}
+
+    let x: I32 = I32::new(100);
+    let bare = 100;
+    assert_traits(&x);
     assert_eq!(format!("{:?}", x), format!("{:?}", bare));
     assert_eq!(x, x);
     assert_eq!(x.clone().into_inner(), x.into_inner());

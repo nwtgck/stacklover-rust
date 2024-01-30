@@ -3,29 +3,24 @@
 use std::prelude::rust_2021::*;
 #[macro_use]
 extern crate std;
-struct Iterator1 {
+struct I32 {
     #[doc(hidden)]
-    __private_inner: [u8; Iterator1::__SIZE],
+    __private_inner: [u8; I32::__SIZE],
 }
 const _: () = {
     type __StackloverWrappedType<__Inner__> = __Inner__;
     #[inline(always)]
-    fn __stacklover_create(dep1: &'static str, dep2: i32) -> impl Iterator<Item = i32> {
-        (1..)
-            .map(|x| x * 3)
-            .take_while(|x| *x < 20)
-            .chain("HELLO".chars().map(|c| c as i32).flat_map(|i| [i, i - 65]))
-            .chain([dep1.len() as i32, dep2])
+    fn __stacklover_create(dep2: i32) -> i32 {
+        dep2
     }
     #[allow(unused)]
     #[allow(unreachable_code)]
-    fn __stacklover_inner_unreachable() -> impl Iterator<Item = i32> {
-        let __stacklover_inner_to_struct_fn_unreachable = |inner| -> Iterator1 {
+    fn __stacklover_inner_unreachable() -> i32 {
+        let __stacklover_inner_to_struct_fn_unreachable = |inner| -> I32 {
             ::core::panicking::panic("internal error: entered unreachable code")
         };
         let _ = {
             let created_value = __stacklover_create(
-                ::core::panicking::panic("internal error: entered unreachable code"),
                 ::core::panicking::panic("internal error: entered unreachable code"),
             );
             let inner_to_struct = __stacklover_inner_to_struct_fn_unreachable;
@@ -45,13 +40,12 @@ const _: () = {
             assert_traits(__stacklover_inner_unreachable());
         }
     };
-    impl Iterator1 {
+    impl I32 {
         #[doc(hidden)]
         const __SIZE: usize = {
             #[allow(non_camel_case_types)]
-            const fn size_of_return_value<dep1, dep2, __StackloverR>(
+            const fn size_of_return_value<dep2, __StackloverR>(
                 _: &(impl ::core::ops::Fn(
-                    dep1,
                     dep2,
                 ) -> __StackloverWrappedType<__StackloverR>),
             ) -> usize {
@@ -60,20 +54,20 @@ const _: () = {
             size_of_return_value(&__stacklover_create)
         };
         #[inline(always)]
-        pub fn new(dep1: &'static str, dep2: i32) -> __StackloverWrappedType<Self> {
+        pub fn new(dep2: i32) -> __StackloverWrappedType<Self> {
             let __stacklover_inner_to_struct_fn = |inner| Self {
                 __private_inner: unsafe {
                     ::core::mem::transmute::<_, [u8; Self::__SIZE]>(inner)
                 },
             };
             {
-                let created_value = __stacklover_create(dep1, dep2);
+                let created_value = __stacklover_create(dep2);
                 let inner_to_struct = __stacklover_inner_to_struct_fn;
                 inner_to_struct(created_value)
             }
         }
         #[inline(always)]
-        pub fn as_ref(&self) -> &(impl Iterator<Item = i32>) {
+        pub fn as_ref(&self) -> &(i32) {
             if true {
                 unsafe {
                     ::core::mem::transmute::<
@@ -90,7 +84,7 @@ const _: () = {
             }
         }
         #[inline(always)]
-        pub fn as_mut(&mut self) -> &mut (impl Iterator<Item = i32>) {
+        pub fn as_mut(&mut self) -> &mut (i32) {
             if true {
                 unsafe {
                     ::core::mem::transmute::<
@@ -107,7 +101,7 @@ const _: () = {
             }
         }
         #[inline(always)]
-        pub fn into_inner(self) -> impl Iterator<Item = i32> {
+        pub fn into_inner(self) -> i32 {
             let inner = if true {
                 unsafe {
                     ::core::mem::transmute::<[u8; Self::__SIZE], _>(self.__private_inner)
@@ -119,7 +113,7 @@ const _: () = {
             inner
         }
     }
-    impl ::core::ops::Drop for Iterator1 {
+    impl ::core::ops::Drop for I32 {
         #[inline(always)]
         fn drop(&mut self) {
             let _ = if true {
@@ -129,6 +123,60 @@ const _: () = {
             } else {
                 #[allow(unreachable_code)] __stacklover_inner_unreachable()
             };
+        }
+    }
+    impl ::core::cmp::PartialEq for I32 {
+        fn eq(&self, other: &Self) -> bool {
+            ::core::cmp::PartialEq::eq(I32::as_ref(self), I32::as_ref(other))
+        }
+        fn ne(&self, other: &Self) -> bool {
+            ::core::cmp::PartialEq::ne(I32::as_ref(self), I32::as_ref(other))
+        }
+    }
+    impl ::core::cmp::Eq for I32 {}
+    impl ::core::cmp::PartialOrd for I32 {
+        fn partial_cmp(
+            &self,
+            other: &Self,
+        ) -> ::core::option::Option<::core::cmp::Ordering> {
+            ::core::cmp::PartialOrd::partial_cmp(I32::as_ref(self), I32::as_ref(other))
+        }
+        fn lt(&self, other: &Self) -> bool {
+            ::core::cmp::PartialOrd::lt(I32::as_ref(self), I32::as_ref(other))
+        }
+        fn le(&self, other: &Self) -> bool {
+            ::core::cmp::PartialOrd::le(I32::as_ref(self), I32::as_ref(other))
+        }
+        fn gt(&self, other: &Self) -> bool {
+            ::core::cmp::PartialOrd::gt(I32::as_ref(self), I32::as_ref(other))
+        }
+        fn ge(&self, other: &Self) -> bool {
+            ::core::cmp::PartialOrd::ge(I32::as_ref(self), I32::as_ref(other))
+        }
+    }
+    impl ::core::cmp::Ord for I32 {
+        fn cmp(&self, other: &Self) -> ::core::cmp::Ordering {
+            ::core::cmp::Ord::cmp(I32::as_ref(self), I32::as_ref(other))
+        }
+    }
+    impl ::core::clone::Clone for I32 {
+        fn clone(&self) -> Self {
+            let cloned = ::core::clone::Clone::clone(I32::as_ref(self));
+            Self {
+                __private_inner: unsafe {
+                    ::core::mem::transmute::<_, [u8; Self::__SIZE]>(cloned)
+                },
+            }
+        }
+    }
+    impl ::core::hash::Hash for I32 {
+        fn hash<H: ::core::hash::Hasher>(&self, state: &mut H) {
+            ::core::hash::Hash::hash(I32::as_ref(self), state)
+        }
+    }
+    impl ::core::fmt::Debug for I32 {
+        fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+            ::core::fmt::Debug::fmt(I32::as_ref(self), f)
         }
     }
 };
