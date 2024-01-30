@@ -153,7 +153,7 @@ Add `stacklover` to the `Cargo.toml`.
 
 ```toml
 [dependencies]
-stacklover = { git = "https://github.com/nwtgck/stacklover-rust.git", rev = "7649a511fffcd85847d7f43ac634e92fb0bd58b1" }
+stacklover = { git = "https://github.com/nwtgck/stacklover-rust.git", rev = "98bad325bd320b1b06c0152fd22607b9f940aab2" }
 ```
 
 ### Simple example
