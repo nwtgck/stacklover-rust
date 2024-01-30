@@ -77,7 +77,7 @@ macro_rules! define_struct {
                 pub fn new( $( $param: $param_ty ),* ) -> __StackloverWrappedType<Self> {
                     let __stacklover_inner_to_struct_fn = |inner| Self {
                         __private_inner: unsafe {
-                            ::core::mem::transmute::<_, [u8; Self::__SIZE]>(inner)
+                            ::core::mem::transmute::<_, [::core::mem::MaybeUninit<u8>; Self::__SIZE]>(inner)
                         },
                         __phantom: ::core::marker::PhantomData,
                     };
@@ -91,7 +91,7 @@ macro_rules! define_struct {
                 #[inline(always)]
                 pub fn as_ref(&self) -> &($inner_type) {
                     if true {
-                        unsafe { ::core::mem::transmute::<&[u8; Self::__SIZE], _>(&self.__private_inner) }
+                        unsafe { ::core::mem::transmute::<&[::core::mem::MaybeUninit<u8>; Self::__SIZE], _>(&self.__private_inner) }
                     } else {
                         // _self for lifetime
                         fn ref_unreachable<S, T>(_self: &S, _: T) -> &T {
@@ -105,7 +105,7 @@ macro_rules! define_struct {
                 #[inline(always)]
                 pub fn as_mut(&mut self) -> &mut ($inner_type) {
                     if true {
-                        unsafe { ::core::mem::transmute::<&mut[u8; Self::__SIZE], _>(&mut self.__private_inner) }
+                        unsafe { ::core::mem::transmute::<&mut[::core::mem::MaybeUninit<u8>; Self::__SIZE], _>(&mut self.__private_inner) }
                     } else {
                         // _self for lifetime
                         fn mut_unreachable<S, T>(_self: &S, _: T) -> &mut T {
@@ -119,7 +119,7 @@ macro_rules! define_struct {
                 #[inline(always)]
                 pub fn into_inner(self) -> $inner_type {
                     let inner = if true {
-                        unsafe { ::core::mem::transmute::<[u8; Self::__SIZE], _>(self.__private_inner) }
+                        unsafe { ::core::mem::transmute::<[::core::mem::MaybeUninit<u8>; Self::__SIZE], _>(self.__private_inner) }
                     } else {
                         #[allow(unreachable_code)]
                         __stacklover_inner_unreachable()
@@ -133,7 +133,7 @@ macro_rules! define_struct {
                 #[inline(always)]
                 fn drop(&mut self) {
                     let _ = if true {
-                        unsafe { ::core::mem::transmute::<[u8; Self::__SIZE], _>(self.__private_inner) }
+                        unsafe { ::core::mem::transmute::<[::core::mem::MaybeUninit<u8>; Self::__SIZE], _>(self.__private_inner) }
                     } else {
                         #[allow(unreachable_code)]
                         __stacklover_inner_unreachable()
@@ -223,7 +223,7 @@ macro_rules! define_struct {
                 pub $async fn new( $($param: $param_ty ),* ) -> __StackloverWrappedType<Self> {
                     let __stacklover_inner_to_struct_fn = |inner| Self {
                         __private_inner: unsafe {
-                            ::core::mem::transmute::<_, [u8; Self::__SIZE]>(inner)
+                            ::core::mem::transmute::<_, [::core::mem::MaybeUninit<u8>; Self::__SIZE]>(inner)
                         },
                         __phantom: ::core::marker::PhantomData,
                     };
@@ -237,7 +237,7 @@ macro_rules! define_struct {
                 #[inline(always)]
                 pub fn as_ref(&self) -> &($inner_type) {
                     if true {
-                        unsafe { ::core::mem::transmute::<&[u8; Self::__SIZE], _>(&self.__private_inner) }
+                        unsafe { ::core::mem::transmute::<&[::core::mem::MaybeUninit<u8>; Self::__SIZE], _>(&self.__private_inner) }
                     } else {
                         // _self for lifetime
                         fn ref_unreachable<S, T>(_self: &S, _: T) -> &T {
@@ -251,7 +251,7 @@ macro_rules! define_struct {
                 #[inline(always)]
                 pub fn as_mut(&mut self) -> &mut ($inner_type) {
                     if true {
-                        unsafe { ::core::mem::transmute::<&mut [u8; Self::__SIZE], _>(&mut self.__private_inner) }
+                        unsafe { ::core::mem::transmute::<&mut [::core::mem::MaybeUninit<u8>; Self::__SIZE], _>(&mut self.__private_inner) }
                     } else {
                         // _self for lifetime
                         fn mut_unreachable<S, T>(_self: &S, _: T) -> &mut T {
@@ -265,7 +265,7 @@ macro_rules! define_struct {
                 #[inline(always)]
                 pub fn into_inner(self) -> $inner_type {
                     let inner = if true {
-                        unsafe { ::core::mem::transmute::<[u8; Self::__SIZE], _>(self.__private_inner) }
+                        unsafe { ::core::mem::transmute::<[::core::mem::MaybeUninit<u8>; Self::__SIZE], _>(self.__private_inner) }
                     } else {
                         #[allow(unreachable_code)]
                         __stacklover_inner_unreachable()
@@ -279,7 +279,7 @@ macro_rules! define_struct {
                 #[inline(always)]
                 fn drop(&mut self) {
                     let _ = if true {
-                        unsafe { ::core::mem::transmute::<[u8; Self::__SIZE], _>(self.__private_inner) }
+                        unsafe { ::core::mem::transmute::<[::core::mem::MaybeUninit<u8>; Self::__SIZE], _>(self.__private_inner) }
                     } else {
                         #[allow(unreachable_code)]
                         __stacklover_inner_unreachable()
@@ -298,7 +298,7 @@ macro_rules! __define_struct {
     ( $struct_name:ident ) => {
         struct $struct_name {
             #[doc(hidden)]
-            __private_inner: [u8; $struct_name::__SIZE],
+            __private_inner: [::core::mem::MaybeUninit<u8>; $struct_name::__SIZE],
             #[doc(hidden)]
             __phantom: ::core::marker::PhantomData<(
                 // for !Send + !Sync by default
@@ -432,7 +432,7 @@ macro_rules! __impl_traits {
                 let cloned = ::core::clone::Clone::clone($struct_name::as_ref(self));
                 Self {
                     __private_inner: unsafe {
-                        ::core::mem::transmute::<_, [u8; Self::__SIZE]>(cloned)
+                        ::core::mem::transmute::<_, [::core::mem::MaybeUninit<u8>; Self::__SIZE]>(cloned)
                     },
                     __phantom: ::core::marker::PhantomData,
                 }

@@ -5,7 +5,7 @@ use std::prelude::rust_2021::*;
 extern crate std;
 struct I32 {
     #[doc(hidden)]
-    __private_inner: [u8; I32::__SIZE],
+    __private_inner: [::core::mem::MaybeUninit<u8>; I32::__SIZE],
     #[doc(hidden)]
     __phantom: ::core::marker::PhantomData<
         (
@@ -63,7 +63,10 @@ const _: () = {
         pub fn new(dep2: i32) -> __StackloverWrappedType<Self> {
             let __stacklover_inner_to_struct_fn = |inner| Self {
                 __private_inner: unsafe {
-                    ::core::mem::transmute::<_, [u8; Self::__SIZE]>(inner)
+                    ::core::mem::transmute::<
+                        _,
+                        [::core::mem::MaybeUninit<u8>; Self::__SIZE],
+                    >(inner)
                 },
                 __phantom: ::core::marker::PhantomData,
             };
@@ -78,7 +81,7 @@ const _: () = {
             if true {
                 unsafe {
                     ::core::mem::transmute::<
-                        &[u8; Self::__SIZE],
+                        &[::core::mem::MaybeUninit<u8>; Self::__SIZE],
                         _,
                     >(&self.__private_inner)
                 }
@@ -95,7 +98,7 @@ const _: () = {
             if true {
                 unsafe {
                     ::core::mem::transmute::<
-                        &mut [u8; Self::__SIZE],
+                        &mut [::core::mem::MaybeUninit<u8>; Self::__SIZE],
                         _,
                     >(&mut self.__private_inner)
                 }
@@ -111,7 +114,10 @@ const _: () = {
         pub fn into_inner(self) -> i32 {
             let inner = if true {
                 unsafe {
-                    ::core::mem::transmute::<[u8; Self::__SIZE], _>(self.__private_inner)
+                    ::core::mem::transmute::<
+                        [::core::mem::MaybeUninit<u8>; Self::__SIZE],
+                        _,
+                    >(self.__private_inner)
                 }
             } else {
                 #[allow(unreachable_code)] __stacklover_inner_unreachable()
@@ -125,7 +131,10 @@ const _: () = {
         fn drop(&mut self) {
             let _ = if true {
                 unsafe {
-                    ::core::mem::transmute::<[u8; Self::__SIZE], _>(self.__private_inner)
+                    ::core::mem::transmute::<
+                        [::core::mem::MaybeUninit<u8>; Self::__SIZE],
+                        _,
+                    >(self.__private_inner)
                 }
             } else {
                 #[allow(unreachable_code)] __stacklover_inner_unreachable()
@@ -171,7 +180,10 @@ const _: () = {
             let cloned = ::core::clone::Clone::clone(I32::as_ref(self));
             Self {
                 __private_inner: unsafe {
-                    ::core::mem::transmute::<_, [u8; Self::__SIZE]>(cloned)
+                    ::core::mem::transmute::<
+                        _,
+                        [::core::mem::MaybeUninit<u8>; Self::__SIZE],
+                    >(cloned)
                 },
                 __phantom: ::core::marker::PhantomData,
             }
