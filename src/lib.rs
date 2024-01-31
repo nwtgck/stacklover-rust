@@ -73,11 +73,20 @@ macro_rules! define_struct {
                     size_of_return_value(&__stacklover_create)
                 };
 
+                #[doc(hidden)]
+                const __ALIGN: usize = {
+                    #[allow(non_camel_case_types)]
+                    const fn align_of_return_value<$($param,)* __StackloverR>(_: &(impl ::core::ops::Fn($($param),*) -> __StackloverWrappedType<__StackloverR>)) -> usize {
+                        ::core::mem::align_of::<__StackloverR>()
+                    }
+                    align_of_return_value(&__stacklover_create)
+                };
+
                 #[inline(always)]
                 pub fn new( $( $param: $param_ty ),* ) -> __StackloverWrappedType<Self> {
                     let __stacklover_inner_to_struct_fn = |inner| Self {
                         __private_inner: unsafe {
-                            ::core::mem::transmute::<_, [::core::mem::MaybeUninit<u8>; Self::__SIZE]>(inner)
+                            ::core::mem::transmute::<_, $crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>>(inner)
                         },
                         __phantom: ::core::marker::PhantomData,
                     };
@@ -91,7 +100,7 @@ macro_rules! define_struct {
                 #[inline(always)]
                 pub fn as_ref(&self) -> &($inner_type) {
                     if true {
-                        unsafe { ::core::mem::transmute::<&[::core::mem::MaybeUninit<u8>; Self::__SIZE], _>(&self.__private_inner) }
+                        unsafe { ::core::mem::transmute::<&$crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>, _>(&self.__private_inner) }
                     } else {
                         // _self for lifetime
                         fn ref_unreachable<S, T>(_self: &S, _: T) -> &T {
@@ -105,7 +114,7 @@ macro_rules! define_struct {
                 #[inline(always)]
                 pub fn as_mut(&mut self) -> &mut ($inner_type) {
                     if true {
-                        unsafe { ::core::mem::transmute::<&mut[::core::mem::MaybeUninit<u8>; Self::__SIZE], _>(&mut self.__private_inner) }
+                        unsafe { ::core::mem::transmute::<&mut$crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>, _>(&mut self.__private_inner) }
                     } else {
                         // _self for lifetime
                         fn mut_unreachable<S, T>(_self: &S, _: T) -> &mut T {
@@ -119,7 +128,7 @@ macro_rules! define_struct {
                 #[inline(always)]
                 pub fn into_inner(self) -> $inner_type {
                     let inner = if true {
-                        unsafe { ::core::mem::transmute::<[::core::mem::MaybeUninit<u8>; Self::__SIZE], _>(self.__private_inner) }
+                        unsafe { ::core::mem::transmute::<$crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>, _>(self.__private_inner) }
                     } else {
                         #[allow(unreachable_code)]
                         __stacklover_inner_unreachable()
@@ -133,7 +142,7 @@ macro_rules! define_struct {
                 #[inline(always)]
                 fn drop(&mut self) {
                     let _ = if true {
-                        unsafe { ::core::mem::transmute::<[::core::mem::MaybeUninit<u8>; Self::__SIZE], _>(self.__private_inner) }
+                        unsafe { ::core::mem::transmute::<$crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>, _>(self.__private_inner) }
                     } else {
                         #[allow(unreachable_code)]
                         __stacklover_inner_unreachable()
@@ -219,11 +228,20 @@ macro_rules! define_struct {
                     size_of_async_return_value(&__stacklover_create)
                 };
 
+                #[doc(hidden)]
+                const __ALIGN: usize = {
+                    #[allow(non_camel_case_types)]
+                    const fn align_of_async_return_value<$($param,)* __StackloverR, Fut: ::core::future::Future<Output = __StackloverWrappedType<__StackloverR>>>(_: &(impl ::core::ops::Fn($($param),*) -> Fut)) -> usize {
+                        ::core::mem::align_of::<__StackloverR>()
+                    }
+                    align_of_async_return_value(&__stacklover_create)
+                };
+
                 #[inline(always)]
                 pub $async fn new( $($param: $param_ty ),* ) -> __StackloverWrappedType<Self> {
                     let __stacklover_inner_to_struct_fn = |inner| Self {
                         __private_inner: unsafe {
-                            ::core::mem::transmute::<_, [::core::mem::MaybeUninit<u8>; Self::__SIZE]>(inner)
+                            ::core::mem::transmute::<_, $crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>>(inner)
                         },
                         __phantom: ::core::marker::PhantomData,
                     };
@@ -237,7 +255,7 @@ macro_rules! define_struct {
                 #[inline(always)]
                 pub fn as_ref(&self) -> &($inner_type) {
                     if true {
-                        unsafe { ::core::mem::transmute::<&[::core::mem::MaybeUninit<u8>; Self::__SIZE], _>(&self.__private_inner) }
+                        unsafe { ::core::mem::transmute::<&$crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>, _>(&self.__private_inner) }
                     } else {
                         // _self for lifetime
                         fn ref_unreachable<S, T>(_self: &S, _: T) -> &T {
@@ -251,7 +269,7 @@ macro_rules! define_struct {
                 #[inline(always)]
                 pub fn as_mut(&mut self) -> &mut ($inner_type) {
                     if true {
-                        unsafe { ::core::mem::transmute::<&mut [::core::mem::MaybeUninit<u8>; Self::__SIZE], _>(&mut self.__private_inner) }
+                        unsafe { ::core::mem::transmute::<&mut $crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>, _>(&mut self.__private_inner) }
                     } else {
                         // _self for lifetime
                         fn mut_unreachable<S, T>(_self: &S, _: T) -> &mut T {
@@ -265,7 +283,7 @@ macro_rules! define_struct {
                 #[inline(always)]
                 pub fn into_inner(self) -> $inner_type {
                     let inner = if true {
-                        unsafe { ::core::mem::transmute::<[::core::mem::MaybeUninit<u8>; Self::__SIZE], _>(self.__private_inner) }
+                        unsafe { ::core::mem::transmute::<$crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>, _>(self.__private_inner) }
                     } else {
                         #[allow(unreachable_code)]
                         __stacklover_inner_unreachable()
@@ -279,7 +297,7 @@ macro_rules! define_struct {
                 #[inline(always)]
                 fn drop(&mut self) {
                     let _ = if true {
-                        unsafe { ::core::mem::transmute::<[::core::mem::MaybeUninit<u8>; Self::__SIZE], _>(self.__private_inner) }
+                        unsafe { ::core::mem::transmute::<$crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>, _>(self.__private_inner) }
                     } else {
                         #[allow(unreachable_code)]
                         __stacklover_inner_unreachable()
@@ -298,7 +316,10 @@ macro_rules! __define_struct {
     ( $struct_name:ident ) => {
         struct $struct_name {
             #[doc(hidden)]
-            __private_inner: [::core::mem::MaybeUninit<u8>; $struct_name::__SIZE],
+            __private_inner: $crate::__private_mod::ErasedStorage<
+                { $struct_name::__SIZE },
+                { $struct_name::__ALIGN },
+            >,
             #[doc(hidden)]
             __phantom: ::core::marker::PhantomData<(
                 // for !Send + !Sync by default
@@ -432,7 +453,7 @@ macro_rules! __impl_traits {
                 let cloned = ::core::clone::Clone::clone($struct_name::as_ref(self));
                 Self {
                     __private_inner: unsafe {
-                        ::core::mem::transmute::<_, [::core::mem::MaybeUninit<u8>; Self::__SIZE]>(cloned)
+                        ::core::mem::transmute::<_, $crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>>(cloned)
                     },
                     __phantom: ::core::marker::PhantomData,
                 }
@@ -457,4 +478,40 @@ macro_rules! __impl_traits {
         }
         $crate::__impl_traits!($struct_name, $($xs)*);
     };
+}
+
+pub mod __private_mod {
+    pub struct ConstUsize<const N: usize>;
+
+    pub trait ToAlignedZst {
+        // Zero-sized type
+        type AlignedZst;
+    }
+
+    macro_rules! define_aligned_zsts {
+        ($($n:literal $zst_name:ident),* ) => {
+            $(
+                #[derive(Copy, Clone)]
+                #[repr(align($n))]
+                pub struct $zst_name;
+                impl ToAlignedZst for ConstUsize<$n> {
+                    type AlignedZst = $zst_name;
+                }
+            )*
+        };
+    }
+
+    // 1 up to 2^29
+    // https://doc.rust-lang.org/reference/type-layout.html#the-alignment-modifiers
+    define_aligned_zsts! {1 Zst1, 2 Zst2, 4 Zst4, 8 Zst8, 16 Zst16, 32 Zst32, 64 Zst64, 128 Zst128, 256 Zst256, 512 Zst512, 1024 Zst1024, 2048 Zst2048, 4096 Zst4096, 8192 Zst8192, 16384 Zst16384, 32768 Zst32768, 65536 Zst65536, 131072 Zst131072, 262144 Zst262144, 524288 Zst524288, 1048576 Zst1048576, 2097152 Zst2097152, 4194304 Zst4194304, 8388608 Zst8388608, 16777216 Zst16777216, 33554432 Zst33554432, 67108864 Zst67108864, 134217728 Zst134217728, 268435456 Zst268435456, 536870912 Zst536870912}
+
+    #[derive(Copy, Clone)]
+    pub union ErasedStorage<const SIZE: usize, const ALIGN: usize>
+    where
+        ConstUsize<ALIGN>: ToAlignedZst,
+        <ConstUsize<ALIGN> as ToAlignedZst>::AlignedZst: ::core::marker::Copy,
+    {
+        _array: ::core::mem::MaybeUninit<[u8; SIZE]>,
+        _zero: <ConstUsize<ALIGN> as ToAlignedZst>::AlignedZst,
+    }
 }
