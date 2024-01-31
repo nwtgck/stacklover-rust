@@ -6,7 +6,10 @@ extern crate std;
 use stacklover::define_struct;
 struct Iterator1 {
     #[doc(hidden)]
-    __private_inner: [::core::mem::MaybeUninit<u8>; Iterator1::__SIZE],
+    __private_inner: ::stacklover::__private_mod::ErasedStorage<
+        { Iterator1::__SIZE },
+        { Iterator1::__ALIGN },
+    >,
     #[doc(hidden)]
     __phantom: ::core::marker::PhantomData<
         (
@@ -70,13 +73,29 @@ const _: () = {
             }
             size_of_return_value(&__stacklover_create)
         };
+        #[doc(hidden)]
+        const __ALIGN: usize = {
+            #[allow(non_camel_case_types)]
+            const fn align_of_return_value<dep1, dep2, __StackloverR>(
+                _: &(impl ::core::ops::Fn(
+                    dep1,
+                    dep2,
+                ) -> __StackloverWrappedType<__StackloverR>),
+            ) -> usize {
+                ::core::mem::align_of::<__StackloverR>()
+            }
+            align_of_return_value(&__stacklover_create)
+        };
         #[inline(always)]
         pub fn new(dep1: &'static str, dep2: i32) -> __StackloverWrappedType<Self> {
             let __stacklover_inner_to_struct_fn = |inner| Self {
                 __private_inner: unsafe {
                     ::core::mem::transmute::<
                         _,
-                        [::core::mem::MaybeUninit<u8>; Self::__SIZE],
+                        ::stacklover::__private_mod::ErasedStorage<
+                            { Iterator1::__SIZE },
+                            { Iterator1::__ALIGN },
+                        >,
                     >(inner)
                 },
                 __phantom: ::core::marker::PhantomData,
@@ -92,7 +111,10 @@ const _: () = {
             if true {
                 unsafe {
                     ::core::mem::transmute::<
-                        &[::core::mem::MaybeUninit<u8>; Self::__SIZE],
+                        &::stacklover::__private_mod::ErasedStorage<
+                            { Iterator1::__SIZE },
+                            { Iterator1::__ALIGN },
+                        >,
                         _,
                     >(&self.__private_inner)
                 }
@@ -109,7 +131,10 @@ const _: () = {
             if true {
                 unsafe {
                     ::core::mem::transmute::<
-                        &mut [::core::mem::MaybeUninit<u8>; Self::__SIZE],
+                        &mut ::stacklover::__private_mod::ErasedStorage<
+                            { Iterator1::__SIZE },
+                            { Iterator1::__ALIGN },
+                        >,
                         _,
                     >(&mut self.__private_inner)
                 }
@@ -126,7 +151,10 @@ const _: () = {
             let inner = if true {
                 unsafe {
                     ::core::mem::transmute::<
-                        [::core::mem::MaybeUninit<u8>; Self::__SIZE],
+                        ::stacklover::__private_mod::ErasedStorage<
+                            { Iterator1::__SIZE },
+                            { Iterator1::__ALIGN },
+                        >,
                         _,
                     >(self.__private_inner)
                 }
@@ -143,7 +171,10 @@ const _: () = {
             let _ = if true {
                 unsafe {
                     ::core::mem::transmute::<
-                        [::core::mem::MaybeUninit<u8>; Self::__SIZE],
+                        ::stacklover::__private_mod::ErasedStorage<
+                            { Iterator1::__SIZE },
+                            { Iterator1::__ALIGN },
+                        >,
                         _,
                     >(self.__private_inner)
                 }
@@ -173,7 +204,10 @@ const _: () = {
                 __private_inner: unsafe {
                     ::core::mem::transmute::<
                         _,
-                        [::core::mem::MaybeUninit<u8>; Self::__SIZE],
+                        ::stacklover::__private_mod::ErasedStorage<
+                            { Iterator1::__SIZE },
+                            { Iterator1::__ALIGN },
+                        >,
                     >(cloned)
                 },
                 __phantom: ::core::marker::PhantomData,
