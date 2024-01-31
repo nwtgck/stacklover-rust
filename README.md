@@ -139,7 +139,7 @@ iterator sum/boxed      time:   [348.60 ms 352.41 ms 356.41 ms]
 iterator sum/stacklover time:   [11.494 ns 11.657 ns 11.819 ns]
 ```
 
-Note that the time unit of "boxed" is ms not ns.
+Note that the time unit of "boxed" is ms not ns. Investigation is underway to know why Box is too slow.
 
 Data size of struct created by `stacklover` is the same as bare type:
 https://github.com/nwtgck/stacklover-rust/blob/796c2dcff68032dbbc064314018565cb21d8c94f/tests/lib.rs#L19
