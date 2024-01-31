@@ -1,7 +1,7 @@
 use futures::{SinkExt as _, StreamExt as _};
 use std::fmt::Debug;
 use std::hash::Hash;
-use std::mem::size_of;
+use std::mem::{align_of, align_of_val, size_of};
 use std::panic::{RefUnwindSafe, UnwindSafe};
 use std::sync::{Arc, Mutex};
 
@@ -21,6 +21,7 @@ fn it_works() {
             .map(|x| x * 2)
     }
     assert_eq!(size_of::<Iterator1>(), size_of_val(&create("", 0)));
+    assert_eq!(align_of::<Iterator1>(), align_of_val(&create("", 0)));
 
     let (tx, rx) = std::sync::mpsc::channel();
     std::thread::spawn(move || {
@@ -110,7 +111,8 @@ fn it_works_with_wrap_params() {
             .into_iter()
             .map(|x| x * 2)
     }
-    assert_eq!(size_of::<Iterator1>(), size_of_val(&create("hello", 100)));
+    assert_eq!(size_of::<Iterator1>(), size_of_val(&create("", 0)));
+    assert_eq!(align_of::<Iterator1>(), align_of_val(&create("", 0)));
 
     let (tx, rx) = std::sync::mpsc::channel();
     std::thread::spawn(move || {
@@ -334,6 +336,7 @@ async fn it_works_with_async() {
             .map(|x| x * 2)
     }
     assert_eq!(size_of::<Iterator2>(), size_of_val(&create("", 0).await));
+    assert_eq!(align_of::<Iterator2>(), align_of_val(&create("", 0).await));
 
     let (mut tx, mut rx) = futures::channel::mpsc::channel(1);
 
@@ -390,6 +393,7 @@ async fn it_works_with_async_fn_and_wrap_params() {
             .map(|x| x * 2)
     }
     assert_eq!(size_of::<Iterator1>(), size_of_val(&create("", 0).await));
+    assert_eq!(align_of::<Iterator1>(), align_of_val(&create("", 0).await));
 
     let (mut tx, mut rx) = futures::channel::mpsc::channel(1);
 
