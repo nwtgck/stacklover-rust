@@ -56,6 +56,12 @@ macro_rules! define_struct {
                 __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
             }
 
+            // At compile time, assert struct size and align equal to those of the inner type.
+            const _: () = {
+                ::core::assert!(::core::mem::size_of::<$struct_name>() == $struct_name::__SIZE, "invalid size");
+                ::core::assert!(::core::mem::align_of::<$struct_name>() == $struct_name::__ALIGN, "invalid align");
+            };
+
             const _: () = {
                 fn _unused() {
                     fn assert_static<T: 'static>(_: T) {}
@@ -210,6 +216,12 @@ macro_rules! define_struct {
                 }
                 __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
             }
+
+            // At compile time, assert struct size and align equal to those of the inner type.
+            const _: () = {
+                ::core::assert!(::core::mem::size_of::<$struct_name>() == $struct_name::__SIZE, "invalid size");
+                ::core::assert!(::core::mem::align_of::<$struct_name>() == $struct_name::__ALIGN, "invalid align");
+            };
 
             const _: () = {
                 fn _unused() {
