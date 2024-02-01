@@ -43,24 +43,6 @@ const _: () = {
         }
         __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
     }
-    const _: () = {
-        if !(::core::mem::size_of::<I32>() == I32::__SIZE) {
-            {
-                ::core::panicking::panic_fmt(format_args!("invalid size"));
-            }
-        }
-        if !(::core::mem::align_of::<I32>() == I32::__ALIGN) {
-            {
-                ::core::panicking::panic_fmt(format_args!("invalid align"));
-            }
-        }
-    };
-    const _: () = {
-        fn _unused() {
-            fn assert_static<T: 'static>(_: T) {}
-            assert_static(__stacklover_inner_unreachable());
-        }
-    };
     impl I32 {
         #[doc(hidden)]
         const __SIZE: usize = {
@@ -106,6 +88,26 @@ const _: () = {
                 inner_to_struct(created_value)
             }
         }
+    }
+    const _: () = {
+        if !(::core::mem::size_of::<I32>() == I32::__SIZE) {
+            {
+                ::core::panicking::panic_fmt(format_args!("invalid size"));
+            }
+        }
+        if !(::core::mem::align_of::<I32>() == I32::__ALIGN) {
+            {
+                ::core::panicking::panic_fmt(format_args!("invalid align"));
+            }
+        }
+    };
+    const _: () = {
+        fn _unused() {
+            fn assert_static<T: 'static>(_: T) {}
+            assert_static(__stacklover_inner_unreachable());
+        }
+    };
+    impl I32 {
         #[inline(always)]
         pub fn as_ref(&self) -> &(i32) {
             if true {

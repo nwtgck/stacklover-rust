@@ -56,19 +56,6 @@ macro_rules! define_struct {
                 __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
             }
 
-            // At compile time, assert struct size and align equal to those of the inner type.
-            const _: () = {
-                ::core::assert!(::core::mem::size_of::<$struct_name>() == $struct_name::__SIZE, "invalid size");
-                ::core::assert!(::core::mem::align_of::<$struct_name>() == $struct_name::__ALIGN, "invalid align");
-            };
-
-            const _: () = {
-                fn _unused() {
-                    fn assert_static<T: 'static>(_: T) {}
-                    assert_static(__stacklover_inner_unreachable());
-                }
-            };
-
             impl $struct_name {
                 #[doc(hidden)]
                 const __SIZE: usize = {
@@ -102,60 +89,9 @@ macro_rules! define_struct {
                         $($to_wrapped_struct_body)*
                     }
                 }
-
-                #[inline(always)]
-                pub fn as_ref(&self) -> &($inner_type) {
-                    if true {
-                        unsafe { ::core::mem::transmute::<&$crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>, _>(&self.__private_inner) }
-                    } else {
-                        // _self for lifetime
-                        fn ref_unreachable<S, T>(_self: &S, _: T) -> &T {
-                            ::core::unreachable!()
-                        }
-                        #[allow(unreachable_code)]
-                        ref_unreachable(self, __stacklover_inner_unreachable())
-                    }
-                }
-
-                #[inline(always)]
-                pub fn as_mut(&mut self) -> &mut ($inner_type) {
-                    if true {
-                        unsafe { ::core::mem::transmute::<&mut$crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>, _>(&mut self.__private_inner) }
-                    } else {
-                        // _self for lifetime
-                        fn mut_unreachable<S, T>(_self: &S, _: T) -> &mut T {
-                            ::core::unreachable!()
-                        }
-                        #[allow(unreachable_code)]
-                        mut_unreachable(self, __stacklover_inner_unreachable())
-                    }
-                }
-
-                #[inline(always)]
-                pub fn into_inner(self) -> $inner_type {
-                    let inner = if true {
-                        unsafe { ::core::mem::transmute::<$crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>, _>(self.__private_inner) }
-                    } else {
-                        #[allow(unreachable_code)]
-                        __stacklover_inner_unreachable()
-                    };
-                    ::core::mem::forget(self);
-                    inner
-                }
             }
 
-            impl ::core::ops::Drop for $struct_name {
-                #[inline(always)]
-                fn drop(&mut self) {
-                    let _ = if true {
-                        unsafe { ::core::mem::transmute::<$crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>, _>(self.__private_inner) }
-                    } else {
-                        #[allow(unreachable_code)]
-                        __stacklover_inner_unreachable()
-                    };
-                }
-            }
-
+            $crate::__assert_and_as_ref_and_as_mut_and_into_inner_and_drop!($struct_name, $inner_type);
             $crate::__impl_traits!($struct_name, $($derive_trait)*);
         };
     };
@@ -217,19 +153,6 @@ macro_rules! define_struct {
                 __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
             }
 
-            // At compile time, assert struct size and align equal to those of the inner type.
-            const _: () = {
-                ::core::assert!(::core::mem::size_of::<$struct_name>() == $struct_name::__SIZE, "invalid size");
-                ::core::assert!(::core::mem::align_of::<$struct_name>() == $struct_name::__ALIGN, "invalid align");
-            };
-
-            const _: () = {
-                fn _unused() {
-                    fn assert_static<T: 'static>(_: T) {}
-                    assert_static(__stacklover_inner_unreachable());
-                }
-            };
-
             impl $struct_name {
                 #[doc(hidden)]
                 const __SIZE: usize = {
@@ -263,62 +186,19 @@ macro_rules! define_struct {
                         $($to_wrapped_struct_body)*
                     }
                 }
-
-                #[inline(always)]
-                pub fn as_ref(&self) -> &($inner_type) {
-                    if true {
-                        unsafe { ::core::mem::transmute::<&$crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>, _>(&self.__private_inner) }
-                    } else {
-                        // _self for lifetime
-                        fn ref_unreachable<S, T>(_self: &S, _: T) -> &T {
-                            ::core::unreachable!()
-                        }
-                        #[allow(unreachable_code)]
-                        ref_unreachable(self, __stacklover_inner_unreachable())
-                    }
-                }
-
-                #[inline(always)]
-                pub fn as_mut(&mut self) -> &mut ($inner_type) {
-                    if true {
-                        unsafe { ::core::mem::transmute::<&mut $crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>, _>(&mut self.__private_inner) }
-                    } else {
-                        // _self for lifetime
-                        fn mut_unreachable<S, T>(_self: &S, _: T) -> &mut T {
-                            ::core::unreachable!()
-                        }
-                        #[allow(unreachable_code)]
-                        mut_unreachable(self, __stacklover_inner_unreachable())
-                    }
-                }
-
-                #[inline(always)]
-                pub fn into_inner(self) -> $inner_type {
-                    let inner = if true {
-                        unsafe { ::core::mem::transmute::<$crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>, _>(self.__private_inner) }
-                    } else {
-                        #[allow(unreachable_code)]
-                        __stacklover_inner_unreachable()
-                    };
-                    ::core::mem::forget(self);
-                    inner
-                }
             }
 
-            impl ::core::ops::Drop for $struct_name {
-                #[inline(always)]
-                fn drop(&mut self) {
-                    let _ = if true {
-                        unsafe { ::core::mem::transmute::<$crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>, _>(self.__private_inner) }
-                    } else {
-                        #[allow(unreachable_code)]
-                        __stacklover_inner_unreachable()
-                    };
-                }
-            }
-
+            $crate::__assert_and_as_ref_and_as_mut_and_into_inner_and_drop!($struct_name, $inner_type);
             $crate::__impl_traits!($struct_name, $($derive_trait)*);
         };
+    };
+}
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __ident_to_unreachable {
+    ( $x:ident ) => {
+        ::core::unreachable!()
     };
 }
 
@@ -349,9 +229,112 @@ macro_rules! __define_struct {
 
 #[doc(hidden)]
 #[macro_export]
-macro_rules! __ident_to_unreachable {
-    ( $x:ident ) => {
-        ::core::unreachable!()
+macro_rules! __assert_and_as_ref_and_as_mut_and_into_inner_and_drop {
+    ( $struct_name:ident, $inner_type:ty ) => {
+        // At compile time, assert struct size and align equal to those of the inner type.
+        const _: () = {
+            ::core::assert!(
+                ::core::mem::size_of::<$struct_name>() == $struct_name::__SIZE,
+                "invalid size"
+            );
+            ::core::assert!(
+                ::core::mem::align_of::<$struct_name>() == $struct_name::__ALIGN,
+                "invalid align"
+            );
+        };
+
+        const _: () = {
+            fn _unused() {
+                fn assert_static<T: 'static>(_: T) {}
+                assert_static(__stacklover_inner_unreachable());
+            }
+        };
+
+        impl $struct_name {
+            #[inline(always)]
+            pub fn as_ref(&self) -> &($inner_type) {
+                if true {
+                    unsafe {
+                        ::core::mem::transmute::<
+                            &$crate::__private_mod::ErasedStorage<
+                                { $struct_name::__SIZE },
+                                { $struct_name::__ALIGN },
+                            >,
+                            _,
+                        >(&self.__private_inner)
+                    }
+                } else {
+                    // _self for lifetime
+                    fn ref_unreachable<S, T>(_self: &S, _: T) -> &T {
+                        ::core::unreachable!()
+                    }
+                    #[allow(unreachable_code)]
+                    ref_unreachable(self, __stacklover_inner_unreachable())
+                }
+            }
+
+            #[inline(always)]
+            pub fn as_mut(&mut self) -> &mut ($inner_type) {
+                if true {
+                    unsafe {
+                        ::core::mem::transmute::<
+                            &mut$crate::__private_mod::ErasedStorage<
+                                { $struct_name::__SIZE },
+                                { $struct_name::__ALIGN },
+                            >,
+                            _,
+                        >(&mut self.__private_inner)
+                    }
+                } else {
+                    // _self for lifetime
+                    fn mut_unreachable<S, T>(_self: &S, _: T) -> &mut T {
+                        ::core::unreachable!()
+                    }
+                    #[allow(unreachable_code)]
+                    mut_unreachable(self, __stacklover_inner_unreachable())
+                }
+            }
+
+            #[inline(always)]
+            pub fn into_inner(self) -> $inner_type {
+                let inner = if true {
+                    unsafe {
+                        ::core::mem::transmute::<
+                            $crate::__private_mod::ErasedStorage<
+                                { $struct_name::__SIZE },
+                                { $struct_name::__ALIGN },
+                            >,
+                            _,
+                        >(self.__private_inner)
+                    }
+                } else {
+                    #[allow(unreachable_code)]
+                    __stacklover_inner_unreachable()
+                };
+                ::core::mem::forget(self);
+                inner
+            }
+        }
+
+        impl ::core::ops::Drop for $struct_name {
+            #[inline(always)]
+            fn drop(&mut self) {
+                let _ = if true {
+                    unsafe {
+                        ::core::mem::transmute::<
+                            $crate::__private_mod::ErasedStorage<
+                                { $struct_name::__SIZE },
+                                { $struct_name::__ALIGN },
+                            >,
+                            _,
+                        >(self.__private_inner)
+                    }
+                } else {
+                    #[allow(unreachable_code)]
+                    __stacklover_inner_unreachable()
+                };
+            }
+        }
     };
 }
 
