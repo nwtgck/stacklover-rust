@@ -176,6 +176,23 @@ const _: () = {
             ::core::mem::forget(self);
             inner
         }
+        #[inline(always)]
+        pub fn as_pin_mut(
+            self: ::core::pin::Pin<&mut Self>,
+        ) -> ::core::pin::Pin<&mut (impl Iterator<Item = i32> + Clone)> {
+            if true {
+                unsafe { ::core::mem::transmute(self) }
+            } else {
+                fn pin_mut_unreachable<S, T>(
+                    _self: ::core::pin::Pin<&mut S>,
+                    _: T,
+                ) -> ::core::pin::Pin<&mut T> {
+                    ::core::panicking::panic("internal error: entered unreachable code")
+                }
+                #[allow(unreachable_code)]
+                pin_mut_unreachable(self, __stacklover_inner_unreachable())
+            }
+        }
     }
     impl ::core::ops::Drop for Iterator1 {
         #[inline(always)]

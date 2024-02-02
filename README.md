@@ -157,7 +157,7 @@ stacklover = { git = "https://github.com/nwtgck/stacklover-rust.git", rev = "bb6
 ```
 
 ### Simple example
-Create by `YourStruct::new()` and access its inner value by `.as_ref()`, `.as_mut()` and `.into_inner()`. Here is an example.
+Create by `YourStruct::new()` and access its inner value by `.as_ref()`, `.as_mut()`, `.into_inner()` and `.as_pin_mut()`. Here is an example.
 
 ```rust
 use std::fmt::Debug;

@@ -312,6 +312,25 @@ macro_rules! __assert_and_as_ref_and_as_mut_and_into_inner_and_drop {
                 ::core::mem::forget(self);
                 inner
             }
+
+            #[inline(always)]
+            pub fn as_pin_mut(
+                self: ::core::pin::Pin<&mut Self>,
+            ) -> ::core::pin::Pin<&mut ($inner_type)> {
+                if true {
+                    unsafe { ::core::mem::transmute(self) }
+                } else {
+                    // _self for lifetime
+                    fn pin_mut_unreachable<S, T>(
+                        _self: ::core::pin::Pin<&mut S>,
+                        _: T,
+                    ) -> ::core::pin::Pin<&mut T> {
+                        ::core::unreachable!()
+                    }
+                    #[allow(unreachable_code)]
+                    pin_mut_unreachable(self, __stacklover_inner_unreachable())
+                }
+            }
         }
 
         impl ::core::ops::Drop for $struct_name {

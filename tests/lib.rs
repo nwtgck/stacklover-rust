@@ -1,9 +1,12 @@
 use futures::{SinkExt as _, StreamExt as _};
 use std::fmt::Debug;
+use std::future::Future;
 use std::hash::Hash;
 use std::mem::{align_of, align_of_val, size_of};
 use std::panic::{RefUnwindSafe, UnwindSafe};
+use std::pin::Pin;
 use std::sync::{Arc, Mutex};
+use std::task::{Context, Poll};
 
 #[test]
 fn it_works() {
@@ -436,6 +439,30 @@ async fn it_works_with_async_and_deriving_traits_and_wrap_params() {
     let bare = create("hello", 100);
     assert_eq!(format!("{:?}", x), format!("{:?}", bare));
     assert_eq!(x, x);
+}
+
+#[tokio::test]
+async fn it_works_with_as_pin_mut() {
+    stacklover::define_struct! {
+        Future1,
+        fn () -> impl Future<Output=i32> {
+            async {
+                tokio::time::sleep(tokio::time::Duration::from_nanos(1)).await;
+                10
+            }
+        },
+        impls = (), // NOTE: !Unpin
+    }
+
+    impl Future for Future1 {
+        type Output = i32;
+
+        fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+            self.as_pin_mut().poll(cx)
+        }
+    }
+
+    assert_eq!(Future1::new().await, 10);
 }
 
 #[tokio::test]
