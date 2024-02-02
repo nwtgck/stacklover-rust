@@ -243,11 +243,9 @@ macro_rules! __assert_and_as_ref_and_as_mut_and_into_inner_and_drop {
             );
         };
 
-        const _: () = {
-            fn _unused() {
-                fn assert_static<T: 'static>(_: T) {}
-                assert_static(__stacklover_inner_unreachable());
-            }
+        const _: fn() = || {
+            fn assert_static<T: 'static>(_: T) {}
+            assert_static(__stacklover_inner_unreachable());
         };
 
         impl $struct_name {
@@ -344,51 +342,41 @@ macro_rules! __impl_traits {
     ( $struct_name:ident, ) => { };
     // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
     ( $struct_name:ident, Send $($xs:ident)* ) => {
-        const _: () = {
-            fn _unused() {
-                fn assert_trait<T: ::core::marker::Send>(_: T) {}
-                assert_trait(__stacklover_inner_unreachable());
-            }
+        const _: fn () = || {
+            fn assert_trait<T: ::core::marker::Send>(_: T) {}
+            assert_trait(__stacklover_inner_unreachable());
         };
         unsafe impl ::core::marker::Send for $struct_name {}
         $crate::__impl_traits!($struct_name, $($xs)*);
     };
     ( $struct_name:ident, Sync $($xs:ident)* ) => {
-        const _: () = {
-            fn _unused() {
-                fn assert_trait<T: ::core::marker::Sync>(_: T) {}
-                assert_trait(__stacklover_inner_unreachable());
-            }
+        const _: fn () = || {
+            fn assert_trait<T: ::core::marker::Sync>(_: T) {}
+            assert_trait(__stacklover_inner_unreachable());
         };
         unsafe impl ::core::marker::Sync for $struct_name {}
         $crate::__impl_traits!($struct_name, $($xs)*);
     };
     ( $struct_name:ident, Unpin $($xs:ident)* ) => {
-        const _: () = {
-            fn _unused() {
-                fn assert_trait<T: ::core::marker::Unpin>(_: T) {}
-                assert_trait(__stacklover_inner_unreachable());
-            }
+        const _: fn () = || {
+            fn assert_trait<T: ::core::marker::Unpin>(_: T) {}
+            assert_trait(__stacklover_inner_unreachable());
         };
         impl ::core::marker::Unpin for $struct_name {}
         $crate::__impl_traits!($struct_name, $($xs)*);
     };
     ( $struct_name:ident, UnwindSafe $($xs:ident)* ) => {
-        const _: () = {
-            fn _unused() {
-                fn assert_trait<T: ::core::panic::UnwindSafe>(_: T) {}
-                assert_trait(__stacklover_inner_unreachable());
-            }
+        const _: fn () = || {
+            fn assert_trait<T: ::core::panic::UnwindSafe>(_: T) {}
+            assert_trait(__stacklover_inner_unreachable());
         };
         impl ::core::panic::UnwindSafe for $struct_name {}
         $crate::__impl_traits!($struct_name, $($xs)*);
     };
     ( $struct_name:ident, RefUnwindSafe $($xs:ident)* ) => {
-        const _: () = {
-            fn _unused() {
-                fn assert_trait<T: ::core::panic::RefUnwindSafe>(_: T) {}
-                assert_trait(__stacklover_inner_unreachable());
-            }
+        const _: fn () = || {
+            fn assert_trait<T: ::core::panic::RefUnwindSafe>(_: T) {}
+            assert_trait(__stacklover_inner_unreachable());
         };
         impl ::core::panic::RefUnwindSafe for $struct_name {}
         $crate::__impl_traits!($struct_name, $($xs)*);

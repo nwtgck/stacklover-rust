@@ -101,11 +101,9 @@ const _: () = {
             }
         }
     };
-    const _: () = {
-        fn _unused() {
-            fn assert_static<T: 'static>(_: T) {}
-            assert_static(__stacklover_inner_unreachable());
-        }
+    const _: fn() = || {
+        fn assert_static<T: 'static>(_: T) {}
+        assert_static(__stacklover_inner_unreachable());
     };
     impl I32 {
         #[inline(always)]

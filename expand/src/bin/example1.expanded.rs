@@ -111,11 +111,9 @@ const _: () = {
             }
         }
     };
-    const _: () = {
-        fn _unused() {
-            fn assert_static<T: 'static>(_: T) {}
-            assert_static(__stacklover_inner_unreachable());
-        }
+    const _: fn() = || {
+        fn assert_static<T: 'static>(_: T) {}
+        assert_static(__stacklover_inner_unreachable());
     };
     impl Iterator1 {
         #[inline(always)]
@@ -195,18 +193,14 @@ const _: () = {
             };
         }
     }
-    const _: () = {
-        fn _unused() {
-            fn assert_trait<T: ::core::marker::Send>(_: T) {}
-            assert_trait(__stacklover_inner_unreachable());
-        }
+    const _: fn() = || {
+        fn assert_trait<T: ::core::marker::Send>(_: T) {}
+        assert_trait(__stacklover_inner_unreachable());
     };
     unsafe impl ::core::marker::Send for Iterator1 {}
-    const _: () = {
-        fn _unused() {
-            fn assert_trait<T: ::core::marker::Sync>(_: T) {}
-            assert_trait(__stacklover_inner_unreachable());
-        }
+    const _: fn() = || {
+        fn assert_trait<T: ::core::marker::Sync>(_: T) {}
+        assert_trait(__stacklover_inner_unreachable());
     };
     unsafe impl ::core::marker::Sync for Iterator1 {}
     impl ::core::clone::Clone for Iterator1 {
