@@ -276,7 +276,7 @@ macro_rules! __assert_and_as_ref_and_as_mut_and_into_inner_and_drop {
                 if true {
                     unsafe {
                         ::core::mem::transmute::<
-                            &mut$crate::__private_mod::ErasedStorage<
+                            &mut $crate::__private_mod::ErasedStorage<
                                 { $struct_name::__SIZE },
                                 { $struct_name::__ALIGN },
                             >,
@@ -285,7 +285,7 @@ macro_rules! __assert_and_as_ref_and_as_mut_and_into_inner_and_drop {
                     }
                 } else {
                     // _self for lifetime
-                    fn mut_unreachable<S, T>(_self: &S, _: T) -> &mut T {
+                    fn mut_unreachable<S, T>(_self: &mut S, _: T) -> &mut T {
                         ::core::unreachable!()
                     }
                     #[allow(unreachable_code)]
@@ -317,39 +317,14 @@ macro_rules! __assert_and_as_ref_and_as_mut_and_into_inner_and_drop {
             pub fn as_pin_mut(
                 self: ::core::pin::Pin<&mut Self>,
             ) -> ::core::pin::Pin<&mut ($inner_type)> {
-                if true {
-                    unsafe { ::core::mem::transmute(self) }
-                } else {
-                    // _self for lifetime
-                    fn pin_mut_unreachable<S, T>(
-                        _self: ::core::pin::Pin<&mut S>,
-                        _: T,
-                    ) -> ::core::pin::Pin<&mut T> {
-                        ::core::unreachable!()
-                    }
-                    #[allow(unreachable_code)]
-                    pin_mut_unreachable(self, __stacklover_inner_unreachable())
-                }
+                unsafe { self.map_unchecked_mut(Self::as_mut) }
             }
         }
 
         impl ::core::ops::Drop for $struct_name {
             #[inline(always)]
             fn drop(&mut self) {
-                let _ = if true {
-                    unsafe {
-                        ::core::mem::transmute::<
-                            $crate::__private_mod::ErasedStorage<
-                                { $struct_name::__SIZE },
-                                { $struct_name::__ALIGN },
-                            >,
-                            _,
-                        >(self.__private_inner)
-                    }
-                } else {
-                    #[allow(unreachable_code)]
-                    __stacklover_inner_unreachable()
-                };
+                unsafe { ::core::ptr::drop_in_place(self.as_mut()) }
             }
         }
     };
@@ -515,5 +490,6 @@ pub mod __private_mod {
     {
         _array: ::core::mem::MaybeUninit<[u8; SIZE]>,
         _zero: <ConstUsize<ALIGN> as ToAlignedZst>::AlignedZst,
+        _pinned: ::core::marker::PhantomPinned,
     }
 }
