@@ -278,7 +278,17 @@ macro_rules! __assert_and_as_ref_and_as_mut_and_into_inner_and_drop {
                 unsafe { self.map_unchecked_mut(Self::as_mut) }
             }
         }
+    };
+}
 
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __impl_traits {
+    // only implement Drop when no copy impl is requested. Not implementing Drop in this case
+    // can not leak a value, since it is asserted that the inner type is also Copy, so has trivial Drop.
+    ( $struct_name:ident, # NO_DROP ) => {
+    };
+    ( $struct_name:ident, ) => {
         impl ::core::ops::Drop for $struct_name {
             #[inline(always)]
             fn drop(&mut self) {
@@ -286,14 +296,8 @@ macro_rules! __assert_and_as_ref_and_as_mut_and_into_inner_and_drop {
             }
         }
     };
-}
-
-#[doc(hidden)]
-#[macro_export]
-macro_rules! __impl_traits {
-    ( $struct_name:ident, ) => { };
     // auto traits: https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits
-    ( $struct_name:ident, Send $($xs:ident)* ) => {
+    ( $struct_name:ident, Send $($xs:tt)* ) => {
         const _: fn () = || {
             fn assert_trait<T: ::core::marker::Send>(_: T) {}
             assert_trait(__stacklover_inner_unreachable());
@@ -301,7 +305,7 @@ macro_rules! __impl_traits {
         unsafe impl ::core::marker::Send for $struct_name {}
         $crate::__impl_traits!($struct_name, $($xs)*);
     };
-    ( $struct_name:ident, Sync $($xs:ident)* ) => {
+    ( $struct_name:ident, Sync $($xs:tt)* ) => {
         const _: fn () = || {
             fn assert_trait<T: ::core::marker::Sync>(_: T) {}
             assert_trait(__stacklover_inner_unreachable());
@@ -309,7 +313,7 @@ macro_rules! __impl_traits {
         unsafe impl ::core::marker::Sync for $struct_name {}
         $crate::__impl_traits!($struct_name, $($xs)*);
     };
-    ( $struct_name:ident, Unpin $($xs:ident)* ) => {
+    ( $struct_name:ident, Unpin $($xs:tt)* ) => {
         const _: fn () = || {
             fn assert_trait<T: ::core::marker::Unpin>(_: T) {}
             assert_trait(__stacklover_inner_unreachable());
@@ -317,7 +321,7 @@ macro_rules! __impl_traits {
         impl ::core::marker::Unpin for $struct_name {}
         $crate::__impl_traits!($struct_name, $($xs)*);
     };
-    ( $struct_name:ident, UnwindSafe $($xs:ident)* ) => {
+    ( $struct_name:ident, UnwindSafe $($xs:tt)* ) => {
         const _: fn () = || {
             fn assert_trait<T: ::core::panic::UnwindSafe>(_: T) {}
             assert_trait(__stacklover_inner_unreachable());
@@ -325,7 +329,7 @@ macro_rules! __impl_traits {
         impl ::core::panic::UnwindSafe for $struct_name {}
         $crate::__impl_traits!($struct_name, $($xs)*);
     };
-    ( $struct_name:ident, RefUnwindSafe $($xs:ident)* ) => {
+    ( $struct_name:ident, RefUnwindSafe $($xs:tt)* ) => {
         const _: fn () = || {
             fn assert_trait<T: ::core::panic::RefUnwindSafe>(_: T) {}
             assert_trait(__stacklover_inner_unreachable());
@@ -334,7 +338,7 @@ macro_rules! __impl_traits {
         $crate::__impl_traits!($struct_name, $($xs)*);
     };
     // other traits
-    ( $struct_name:ident, PartialEq $($xs:ident)* ) => {
+    ( $struct_name:ident, PartialEq $($xs:tt)* ) => {
         impl ::core::cmp::PartialEq for $struct_name {
             fn eq(&self, other: &Self) -> bool {
                 ::core::cmp::PartialEq::eq($struct_name::as_ref(self), $struct_name::as_ref(other))
@@ -346,11 +350,11 @@ macro_rules! __impl_traits {
         }
         $crate::__impl_traits!($struct_name, $($xs)*);
     };
-    ( $struct_name:ident, Eq $($xs:ident)* ) => {
+    ( $struct_name:ident, Eq $($xs:tt)* ) => {
         impl ::core::cmp::Eq for $struct_name {}
         $crate::__impl_traits!($struct_name, $($xs)*);
     };
-    ( $struct_name:ident, PartialOrd $($xs:ident)* ) => {
+    ( $struct_name:ident, PartialOrd $($xs:tt)* ) => {
         impl ::core::cmp::PartialOrd for $struct_name {
             fn partial_cmp(&self, other: &Self) -> ::core::option::Option<::core::cmp::Ordering> {
                 ::core::cmp::PartialOrd::partial_cmp($struct_name::as_ref(self), $struct_name::as_ref(other))
@@ -374,7 +378,7 @@ macro_rules! __impl_traits {
         }
         $crate::__impl_traits!($struct_name, $($xs)*);
     };
-    ( $struct_name:ident, Ord $($xs:ident)* ) => {
+    ( $struct_name:ident, Ord $($xs:tt)* ) => {
         impl ::core::cmp::Ord for $struct_name {
             fn cmp(&self, other: &Self) -> ::core::cmp::Ordering {
                 ::core::cmp::Ord::cmp($struct_name::as_ref(self), $struct_name::as_ref(other))
@@ -382,21 +386,28 @@ macro_rules! __impl_traits {
         }
         $crate::__impl_traits!($struct_name, $($xs)*);
     };
-    ( $struct_name:ident, Clone $($xs:ident)* ) => {
+    ( $struct_name:ident, Clone $($xs:tt)* ) => {
         impl ::core::clone::Clone for $struct_name {
             fn clone(&self) -> Self {
                 let cloned = ::core::clone::Clone::clone($struct_name::as_ref(self));
                 Self {
                     __private_inner: unsafe {
                         ::core::mem::transmute::<_, $crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>>(cloned)
-                    },
+                    }
                 }
             }
         }
-        $crate::__impl_traits!($struct_name, $($xs)*);
+        $crate::__impl_traits!($struct_name, $($xs)* );
     };
-    // NOTE: `Copy`: the trait `Copy` cannot be implemented for this type; the type has a destructor
-    ( $struct_name:ident, Hash $($xs:ident)* ) => {
+    ( $struct_name:ident, Copy $($xs:tt)* ) => {
+        const _: fn() = || {
+            fn assert_trait<T: ::core::marker::Copy>(_: T) {}
+            assert_trait(__stacklover_inner_unreachable());
+        };
+        impl ::core::marker::Copy for $struct_name {}
+        $crate::__impl_traits!($struct_name, $($xs)* # NO_DROP );
+    };
+    ( $struct_name:ident, Hash $($xs:tt)* ) => {
         impl ::core::hash::Hash for $struct_name {
             fn hash<H: ::core::hash::Hasher>(&self, state: &mut H) {
                 ::core::hash::Hash::hash($struct_name::as_ref(self), state)
@@ -404,7 +415,7 @@ macro_rules! __impl_traits {
         }
         $crate::__impl_traits!($struct_name, $($xs)*);
     };
-    ( $struct_name:ident, Debug $($xs:ident)* ) => {
+    ( $struct_name:ident, Debug $($xs:tt)* ) => {
         impl ::core::fmt::Debug for $struct_name {
             fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
                 ::core::fmt::Debug::fmt($struct_name::as_ref(self), f)
@@ -426,6 +437,7 @@ pub mod __private_mod {
         ($($n:literal $zst_name:ident),* ) => {
             $(
                 #[repr(align($n))]
+                #[derive(Clone, Copy)]
                 pub struct $zst_name;
                 impl ToAlignedZst for ConstUsize<$n> {
                     type AlignedZst = $zst_name;
@@ -438,9 +450,12 @@ pub mod __private_mod {
     // https://doc.rust-lang.org/reference/type-layout.html#the-alignment-modifiers
     define_aligned_zsts! {1 Zst1, 2 Zst2, 4 Zst4, 8 Zst8, 16 Zst16, 32 Zst32, 64 Zst64, 128 Zst128, 256 Zst256, 512 Zst512, 1024 Zst1024, 2048 Zst2048, 4096 Zst4096, 8192 Zst8192, 16384 Zst16384, 32768 Zst32768, 65536 Zst65536, 131072 Zst131072, 262144 Zst262144, 524288 Zst524288, 1048576 Zst1048576, 2097152 Zst2097152, 4194304 Zst4194304, 8388608 Zst8388608, 16777216 Zst16777216, 33554432 Zst33554432, 67108864 Zst67108864, 134217728 Zst134217728, 268435456 Zst268435456, 536870912 Zst536870912}
 
+    // The Copy impl here is only supposed to allow the impl of Copy for the wrapper struct. Do NOT use it to duplicate the contained value without caution.
+    #[derive(Clone, Copy)]
     pub union ErasedStorage<const SIZE: usize, const ALIGN: usize>
     where
         ConstUsize<ALIGN>: ToAlignedZst,
+        <ConstUsize<ALIGN> as ToAlignedZst>::AlignedZst: Copy,
     {
         _array: ::core::mem::MaybeUninit<[u8; SIZE]>,
         _zero: ::core::mem::ManuallyDrop<<ConstUsize<ALIGN> as ToAlignedZst>::AlignedZst>,
