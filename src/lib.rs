@@ -295,22 +295,12 @@ macro_rules! __assert_and_as_ref_and_as_mut_and_into_inner_and_drop {
 
             #[inline(always)]
             pub fn into_inner(self) -> $inner_type {
-                let inner = if true {
-                    unsafe {
-                        ::core::mem::transmute::<
-                            $crate::__private_mod::ErasedStorage<
-                                { $struct_name::__SIZE },
-                                { $struct_name::__ALIGN },
-                            >,
-                            _,
-                        >(self.__private_inner)
-                    }
+                if true {
+                    unsafe { ::core::mem::transmute(self) }
                 } else {
                     #[allow(unreachable_code)]
                     __stacklover_inner_unreachable()
-                };
-                ::core::mem::forget(self);
-                inner
+                }
             }
 
             #[inline(always)]

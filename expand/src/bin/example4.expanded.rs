@@ -148,21 +148,11 @@ const _: () = {
         }
         #[inline(always)]
         pub fn into_inner(self) -> i32 {
-            let inner = if true {
-                unsafe {
-                    ::core::mem::transmute::<
-                        ::stacklover::__private_mod::ErasedStorage<
-                            { I32::__SIZE },
-                            { I32::__ALIGN },
-                        >,
-                        _,
-                    >(self.__private_inner)
-                }
+            if true {
+                unsafe { ::core::mem::transmute(self) }
             } else {
                 #[allow(unreachable_code)] __stacklover_inner_unreachable()
-            };
-            ::core::mem::forget(self);
-            inner
+            }
         }
         #[inline(always)]
         pub fn as_pin_mut(
