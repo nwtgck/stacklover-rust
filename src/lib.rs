@@ -81,7 +81,6 @@ macro_rules! define_struct {
                         __private_inner: unsafe {
                             ::core::mem::transmute::<_, $crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>>(inner)
                         },
-                        __phantom: ::core::marker::PhantomData,
                     };
                     {
                         let $created_value = __stacklover_create( $($param),* );
@@ -178,7 +177,6 @@ macro_rules! define_struct {
                         __private_inner: unsafe {
                             ::core::mem::transmute::<_, $crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>>(inner)
                         },
-                        __phantom: ::core::marker::PhantomData,
                     };
                     {
                         let $created_value = __stacklover_create( $($param),* ).await;
@@ -212,17 +210,6 @@ macro_rules! __define_struct {
                 { $struct_name::__SIZE },
                 { $struct_name::__ALIGN },
             >,
-            #[doc(hidden)]
-            __phantom: ::core::marker::PhantomData<(
-                // for !Send + !Sync by default
-                *const (),
-                // for !Unpin by default
-                ::core::marker::PhantomPinned,
-                // for !UnwindSafe by default
-                ::core::marker::PhantomData<&'static mut ()>,
-                // for !Sync + !RefUnwindSafe by default
-                ::core::marker::PhantomData<::core::cell::UnsafeCell<()>>,
-            )>,
         }
     };
 }
@@ -432,7 +419,6 @@ macro_rules! __impl_traits {
                     __private_inner: unsafe {
                         ::core::mem::transmute::<_, $crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>>(cloned)
                     },
-                    __phantom: ::core::marker::PhantomData,
                 }
             }
         }
@@ -490,6 +476,16 @@ pub mod __private_mod {
     {
         _array: ::core::mem::MaybeUninit<[u8; SIZE]>,
         _zero: <ConstUsize<ALIGN> as ToAlignedZst>::AlignedZst,
-        _pinned: ::core::marker::PhantomPinned,
+        #[allow(clippy::type_complexity)]
+        _phantom: ::core::marker::PhantomData<(
+            // for !Send + !Sync by default
+            *const (),
+            // for !Unpin by default
+            ::core::marker::PhantomPinned,
+            // for !UnwindSafe by default
+            ::core::marker::PhantomData<&'static mut ()>,
+            // for !Sync + !RefUnwindSafe by default
+            ::core::marker::PhantomData<::core::cell::UnsafeCell<()>>,
+        )>,
     }
 }
