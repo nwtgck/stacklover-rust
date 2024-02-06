@@ -476,8 +476,10 @@ fn it_works_with_as_pin_drop() {
     impl Drop for Trap {
         fn drop(&mut self) {
             let this = unsafe { Pin::new_unchecked(self) };
-            // simulate a read if the ptr was initialized
             if !this.ptr.is_null() {
+                // If ptr is initialized, we know that self has been pinned and hasn't moved. Assert that this is still the case.
+                assert_eq!(this.ptr, &this.data, "ptr should point to our own data");
+                // Simulate a read if the ptr was initialized to trap miri if the pointer provenance was somehow disabled.
                 let _ = unsafe { &*this.ptr }.to_string();
             }
         }
