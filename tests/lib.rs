@@ -508,8 +508,9 @@ fn it_works_with_as_pin_drop() {
         },
         impls = (), // NOTE: !Unpin
     }
-    let mut pinned = PinUpType::new();
-    let pinned = ::core::pin::pin!(pinned);
+    let pinned = PinUpType::new();
+    // TODO: replace with ::core::pin::pin! when the MSRV is bumped to >1.68.0
+    futures::pin_mut!(pinned);
     pinned.as_pin_mut().init();
     // ... pinned is dropped here, which activates the trap in miri.
 }
