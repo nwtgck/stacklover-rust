@@ -206,6 +206,7 @@ macro_rules! __ident_to_unreachable {
 #[macro_export]
 macro_rules! __define_struct {
     ( $struct_name:ident ) => {
+        #[repr(transparent)]
         struct $struct_name {
             #[doc(hidden)]
             __private_inner: $crate::__private_mod::ErasedStorage<

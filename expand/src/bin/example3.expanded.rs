@@ -4,6 +4,7 @@ use std::prelude::rust_2021::*;
 #[macro_use]
 extern crate std;
 use stacklover::define_struct;
+#[repr(transparent)]
 struct Iterator1 {
     #[doc(hidden)]
     __private_inner: ::stacklover::__private_mod::ErasedStorage<
