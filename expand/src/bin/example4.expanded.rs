@@ -10,15 +10,6 @@ struct I32 {
         { I32::__SIZE },
         { I32::__ALIGN },
     >,
-    #[doc(hidden)]
-    __phantom: ::core::marker::PhantomData<
-        (
-            *const (),
-            ::core::marker::PhantomPinned,
-            ::core::marker::PhantomData<&'static mut ()>,
-            ::core::marker::PhantomData<::core::cell::UnsafeCell<()>>,
-        ),
-    >,
 }
 const _: () = {
     type __StackloverWrappedType<__Inner__> = __Inner__;
@@ -81,7 +72,6 @@ const _: () = {
                         >,
                     >(inner)
                 },
-                __phantom: ::core::marker::PhantomData,
             };
             {
                 let created_value = __stacklover_create(dep2);
@@ -140,7 +130,7 @@ const _: () = {
                     >(&mut self.__private_inner)
                 }
             } else {
-                fn mut_unreachable<S, T>(_self: &S, _: T) -> &mut T {
+                fn mut_unreachable<S, T>(_self: &mut S, _: T) -> &mut T {
                     ::core::panicking::panic("internal error: entered unreachable code")
                 }
                 #[allow(unreachable_code)]
@@ -159,36 +149,13 @@ const _: () = {
         pub fn as_pin_mut(
             self: ::core::pin::Pin<&mut Self>,
         ) -> ::core::pin::Pin<&mut (i32)> {
-            if true {
-                unsafe { ::core::mem::transmute(self) }
-            } else {
-                fn pin_mut_unreachable<S, T>(
-                    _self: ::core::pin::Pin<&mut S>,
-                    _: T,
-                ) -> ::core::pin::Pin<&mut T> {
-                    ::core::panicking::panic("internal error: entered unreachable code")
-                }
-                #[allow(unreachable_code)]
-                pin_mut_unreachable(self, __stacklover_inner_unreachable())
-            }
+            unsafe { self.map_unchecked_mut(Self::as_mut) }
         }
     }
     impl ::core::ops::Drop for I32 {
         #[inline(always)]
         fn drop(&mut self) {
-            let _ = if true {
-                unsafe {
-                    ::core::mem::transmute::<
-                        ::stacklover::__private_mod::ErasedStorage<
-                            { I32::__SIZE },
-                            { I32::__ALIGN },
-                        >,
-                        _,
-                    >(self.__private_inner)
-                }
-            } else {
-                #[allow(unreachable_code)] __stacklover_inner_unreachable()
-            };
+            unsafe { ::core::ptr::drop_in_place(self.as_mut()) }
         }
     }
     impl ::core::cmp::PartialEq for I32 {
@@ -238,7 +205,6 @@ const _: () = {
                         >,
                     >(cloned)
                 },
-                __phantom: ::core::marker::PhantomData,
             }
         }
     }
