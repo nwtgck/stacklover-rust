@@ -445,6 +445,7 @@ async fn it_works_with_async_and_deriving_traits_and_wrap_params() {
 async fn it_works_with_as_pin_mut() {
     stacklover::define_struct! {
         Future1,
+        #[allow(clippy::manual_async_fn)]
         fn () -> impl Future<Output=i32> {
             async {
                 tokio::time::sleep(tokio::time::Duration::from_nanos(1)).await;
@@ -463,6 +464,55 @@ async fn it_works_with_as_pin_mut() {
     }
 
     assert_eq!(Future1::new().await, 10);
+}
+
+#[test]
+fn it_works_with_as_pin_drop() {
+    struct Trap {
+        data: String,
+        ptr: *const String,
+        _marker: std::marker::PhantomPinned,
+    }
+    impl Drop for Trap {
+        fn drop(&mut self) {
+            let this = unsafe { Pin::new_unchecked(self) };
+            if !this.ptr.is_null() {
+                // If ptr is initialized, we know that self has been pinned and hasn't moved. Assert that this is still the case.
+                assert_eq!(this.ptr, &this.data, "ptr should point to our own data");
+                // Simulate a read if the ptr was initialized to trap miri if the pointer provenance was somehow disabled.
+                let _ = unsafe { &*this.ptr }.to_string();
+            }
+        }
+    }
+    trait Init {
+        fn init(self: Pin<&mut Self>);
+    }
+    impl Init for Trap {
+        fn init(self: Pin<&mut Self>) {
+            let self_ptr = &self.data as *const String;
+            let this = unsafe { self.get_unchecked_mut() };
+            this.ptr = self_ptr;
+        }
+    }
+    fn create() -> Trap {
+        Trap {
+            data: "foobar".to_string(),
+            ptr: core::ptr::null(),
+            _marker: std::marker::PhantomPinned,
+        }
+    }
+    stacklover::define_struct! {
+        PinUpType,
+        fn () -> impl Init {
+            create()
+        },
+        impls = (), // NOTE: !Unpin
+    }
+    let pinned = PinUpType::new();
+    // TODO: replace with ::core::pin::pin! when the MSRV is bumped to >1.68.0
+    futures::pin_mut!(pinned);
+    pinned.as_pin_mut().init();
+    // ... pinned is dropped here, which activates the trap in miri.
 }
 
 #[tokio::test]
