@@ -1,10 +1,12 @@
 use futures::{SinkExt as _, StreamExt as _};
+use std::cell::Cell;
 use std::fmt::Debug;
 use std::future::Future;
 use std::hash::Hash;
 use std::mem::{align_of, align_of_val, size_of};
 use std::panic::{RefUnwindSafe, UnwindSafe};
 use std::pin::Pin;
+use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 use std::task::{Context, Poll};
 
@@ -59,6 +61,43 @@ fn it_works_with_deriving() {
     assert_eq!(format!("{:?}", x), format!("{:?}", bare));
     assert_eq!(x, x);
     assert_eq!(x.clone().into_inner(), x.into_inner());
+}
+
+#[test]
+fn it_works_with_copy() {
+    stacklover::define_struct! {
+        SimpleType,
+        fn (a: i32) -> i32 {
+            a
+        },
+        impls = ( Clone, Copy, Debug ),
+    }
+    let x: SimpleType = SimpleType::new(42);
+    assert_eq!(x.into_inner(), 42);
+    assert_eq!(x.into_inner(), 42);
+}
+
+#[test]
+fn it_works_with_non_trivial_drop() {
+    let flag = Rc::new(Cell::new(false));
+    struct HasDrop {
+        flag: Rc<Cell<bool>>,
+    }
+    impl Drop for HasDrop {
+        fn drop(&mut self) {
+            self.flag.set(true);
+        }
+    }
+    stacklover::define_struct! {
+        DroppingType,
+        fn (flag: Rc<Cell<bool>>) -> HasDrop {
+            HasDrop { flag }
+        },
+        impls = ( ),
+    }
+    let x = DroppingType::new(flag.clone());
+    drop(x);
+    assert!(flag.get(), "flag should have been set in drop impl");
 }
 
 #[test]
