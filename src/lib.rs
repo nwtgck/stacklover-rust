@@ -445,7 +445,6 @@ pub mod __private_mod {
     macro_rules! define_aligned_zsts {
         ($($n:literal $zst_name:ident),* ) => {
             $(
-                #[derive(Copy, Clone)]
                 #[repr(align($n))]
                 pub struct $zst_name;
                 impl ToAlignedZst for ConstUsize<$n> {
@@ -459,14 +458,12 @@ pub mod __private_mod {
     // https://doc.rust-lang.org/reference/type-layout.html#the-alignment-modifiers
     define_aligned_zsts! {1 Zst1, 2 Zst2, 4 Zst4, 8 Zst8, 16 Zst16, 32 Zst32, 64 Zst64, 128 Zst128, 256 Zst256, 512 Zst512, 1024 Zst1024, 2048 Zst2048, 4096 Zst4096, 8192 Zst8192, 16384 Zst16384, 32768 Zst32768, 65536 Zst65536, 131072 Zst131072, 262144 Zst262144, 524288 Zst524288, 1048576 Zst1048576, 2097152 Zst2097152, 4194304 Zst4194304, 8388608 Zst8388608, 16777216 Zst16777216, 33554432 Zst33554432, 67108864 Zst67108864, 134217728 Zst134217728, 268435456 Zst268435456, 536870912 Zst536870912}
 
-    #[derive(Copy, Clone)]
     pub union ErasedStorage<const SIZE: usize, const ALIGN: usize>
     where
         ConstUsize<ALIGN>: ToAlignedZst,
-        <ConstUsize<ALIGN> as ToAlignedZst>::AlignedZst: ::core::marker::Copy,
     {
         _array: ::core::mem::MaybeUninit<[u8; SIZE]>,
-        _zero: <ConstUsize<ALIGN> as ToAlignedZst>::AlignedZst,
+        _zero: ::core::mem::ManuallyDrop<<ConstUsize<ALIGN> as ToAlignedZst>::AlignedZst>,
         #[allow(clippy::type_complexity)]
         _phantom: ::core::marker::PhantomData<(
             // for !Send + !Sync by default
