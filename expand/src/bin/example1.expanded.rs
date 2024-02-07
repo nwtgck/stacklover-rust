@@ -154,12 +154,6 @@ const _: () = {
             unsafe { self.map_unchecked_mut(Self::as_mut) }
         }
     }
-    impl ::core::ops::Drop for Iterator1 {
-        #[inline(always)]
-        fn drop(&mut self) {
-            unsafe { ::core::ptr::drop_in_place(self.as_mut()) }
-        }
-    }
     const _: fn() = || {
         fn assert_trait<T: ::core::marker::Send>(_: T) {}
         assert_trait(__stacklover_inner_unreachable());
@@ -184,6 +178,12 @@ const _: () = {
                     >(cloned)
                 },
             }
+        }
+    }
+    impl ::core::ops::Drop for Iterator1 {
+        #[inline(always)]
+        fn drop(&mut self) {
+            unsafe { ::core::ptr::drop_in_place(self.as_mut()) }
         }
     }
 };

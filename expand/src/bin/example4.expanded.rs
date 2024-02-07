@@ -146,12 +146,6 @@ const _: () = {
             unsafe { self.map_unchecked_mut(Self::as_mut) }
         }
     }
-    impl ::core::ops::Drop for I32 {
-        #[inline(always)]
-        fn drop(&mut self) {
-            unsafe { ::core::ptr::drop_in_place(self.as_mut()) }
-        }
-    }
     impl ::core::cmp::PartialEq for I32 {
         fn eq(&self, other: &Self) -> bool {
             ::core::cmp::PartialEq::eq(I32::as_ref(self), I32::as_ref(other))
@@ -210,6 +204,12 @@ const _: () = {
     impl ::core::fmt::Debug for I32 {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
             ::core::fmt::Debug::fmt(I32::as_ref(self), f)
+        }
+    }
+    impl ::core::ops::Drop for I32 {
+        #[inline(always)]
+        fn drop(&mut self) {
+            unsafe { ::core::ptr::drop_in_place(self.as_mut()) }
         }
     }
 };
