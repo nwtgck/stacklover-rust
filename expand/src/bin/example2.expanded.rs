@@ -52,36 +52,6 @@ const _: () = {
         __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
     }
     impl Iterator1 {
-        #[doc(hidden)]
-        const __SIZE: usize = {
-            #[allow(non_camel_case_types)]
-            const fn size_of_async_return_value<
-                dep1,
-                dep2,
-                __StackloverR,
-                Fut: ::core::future::Future<
-                        Output = __StackloverWrappedType<__StackloverR>,
-                    >,
-            >(_: &(impl ::core::ops::Fn(dep1, dep2) -> Fut)) -> usize {
-                ::core::mem::size_of::<__StackloverR>()
-            }
-            size_of_async_return_value(&__stacklover_create)
-        };
-        #[doc(hidden)]
-        const __ALIGN: usize = {
-            #[allow(non_camel_case_types)]
-            const fn align_of_async_return_value<
-                dep1,
-                dep2,
-                __StackloverR,
-                Fut: ::core::future::Future<
-                        Output = __StackloverWrappedType<__StackloverR>,
-                    >,
-            >(_: &(impl ::core::ops::Fn(dep1, dep2) -> Fut)) -> usize {
-                ::core::mem::align_of::<__StackloverR>()
-            }
-            align_of_async_return_value(&__stacklover_create)
-        };
         #[inline(always)]
         pub async fn new(
             dep1: &'static str,
@@ -122,6 +92,24 @@ const _: () = {
         assert_static(__stacklover_inner_unreachable());
     };
     impl Iterator1 {
+        #[doc(hidden)]
+        const __SIZE: usize = {
+            const fn size_of_return_value<R>(
+                _: &(impl ::core::ops::Fn() -> R),
+            ) -> usize {
+                ::core::mem::size_of::<R>()
+            }
+            size_of_return_value(&__stacklover_inner_unreachable)
+        };
+        #[doc(hidden)]
+        const __ALIGN: usize = {
+            const fn align_of_return_value<R>(
+                _: &(impl ::core::ops::Fn() -> R),
+            ) -> usize {
+                ::core::mem::align_of::<R>()
+            }
+            align_of_return_value(&__stacklover_inner_unreachable)
+        };
         #[inline(always)]
         pub fn as_ref(&self) -> &(impl Iterator<Item = i32> + Clone) {
             if true {

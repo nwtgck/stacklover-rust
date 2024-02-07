@@ -36,30 +36,6 @@ const _: () = {
         __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
     }
     impl I32 {
-        #[doc(hidden)]
-        const __SIZE: usize = {
-            #[allow(non_camel_case_types)]
-            const fn size_of_return_value<dep2, __StackloverR>(
-                _: &(impl ::core::ops::Fn(
-                    dep2,
-                ) -> __StackloverWrappedType<__StackloverR>),
-            ) -> usize {
-                ::core::mem::size_of::<__StackloverR>()
-            }
-            size_of_return_value(&__stacklover_create)
-        };
-        #[doc(hidden)]
-        const __ALIGN: usize = {
-            #[allow(non_camel_case_types)]
-            const fn align_of_return_value<dep2, __StackloverR>(
-                _: &(impl ::core::ops::Fn(
-                    dep2,
-                ) -> __StackloverWrappedType<__StackloverR>),
-            ) -> usize {
-                ::core::mem::align_of::<__StackloverR>()
-            }
-            align_of_return_value(&__stacklover_create)
-        };
         #[inline(always)]
         pub fn new(dep2: i32) -> __StackloverWrappedType<Self> {
             let __stacklover_inner_to_struct_fn = |inner| Self {
@@ -97,6 +73,24 @@ const _: () = {
         assert_static(__stacklover_inner_unreachable());
     };
     impl I32 {
+        #[doc(hidden)]
+        const __SIZE: usize = {
+            const fn size_of_return_value<R>(
+                _: &(impl ::core::ops::Fn() -> R),
+            ) -> usize {
+                ::core::mem::size_of::<R>()
+            }
+            size_of_return_value(&__stacklover_inner_unreachable)
+        };
+        #[doc(hidden)]
+        const __ALIGN: usize = {
+            const fn align_of_return_value<R>(
+                _: &(impl ::core::ops::Fn() -> R),
+            ) -> usize {
+                ::core::mem::align_of::<R>()
+            }
+            align_of_return_value(&__stacklover_inner_unreachable)
+        };
         #[inline(always)]
         pub fn as_ref(&self) -> &(i32) {
             if true {

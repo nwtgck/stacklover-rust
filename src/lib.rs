@@ -57,24 +57,6 @@ macro_rules! define_struct {
             }
 
             impl $struct_name {
-                #[doc(hidden)]
-                const __SIZE: usize = {
-                    #[allow(non_camel_case_types)]
-                    const fn size_of_return_value<$($param,)* __StackloverR>(_: &(impl ::core::ops::Fn($($param),*) -> __StackloverWrappedType<__StackloverR>)) -> usize {
-                        ::core::mem::size_of::<__StackloverR>()
-                    }
-                    size_of_return_value(&__stacklover_create)
-                };
-
-                #[doc(hidden)]
-                const __ALIGN: usize = {
-                    #[allow(non_camel_case_types)]
-                    const fn align_of_return_value<$($param,)* __StackloverR>(_: &(impl ::core::ops::Fn($($param),*) -> __StackloverWrappedType<__StackloverR>)) -> usize {
-                        ::core::mem::align_of::<__StackloverR>()
-                    }
-                    align_of_return_value(&__stacklover_create)
-                };
-
                 #[inline(always)]
                 pub fn new( $( $param: $param_ty ),* ) -> __StackloverWrappedType<Self> {
                     let __stacklover_inner_to_struct_fn = |inner| Self {
@@ -153,24 +135,6 @@ macro_rules! define_struct {
             }
 
             impl $struct_name {
-                #[doc(hidden)]
-                const __SIZE: usize = {
-                    #[allow(non_camel_case_types)]
-                    const fn size_of_async_return_value<$($param,)* __StackloverR, Fut: ::core::future::Future<Output = __StackloverWrappedType<__StackloverR>>>(_: &(impl ::core::ops::Fn($($param),*) -> Fut)) -> usize {
-                        ::core::mem::size_of::<__StackloverR>()
-                    }
-                    size_of_async_return_value(&__stacklover_create)
-                };
-
-                #[doc(hidden)]
-                const __ALIGN: usize = {
-                    #[allow(non_camel_case_types)]
-                    const fn align_of_async_return_value<$($param,)* __StackloverR, Fut: ::core::future::Future<Output = __StackloverWrappedType<__StackloverR>>>(_: &(impl ::core::ops::Fn($($param),*) -> Fut)) -> usize {
-                        ::core::mem::align_of::<__StackloverR>()
-                    }
-                    align_of_async_return_value(&__stacklover_create)
-                };
-
                 #[inline(always)]
                 pub $async fn new( $($param: $param_ty ),* ) -> __StackloverWrappedType<Self> {
                     let __stacklover_inner_to_struct_fn = |inner| Self {
@@ -237,6 +201,22 @@ macro_rules! __assert_and_as_ref_and_as_mut_and_into_inner_and_drop {
         };
 
         impl $struct_name {
+            #[doc(hidden)]
+            const __SIZE: usize = {
+                const fn size_of_return_value<R>(_: &(impl ::core::ops::Fn() -> R)) -> usize {
+                    ::core::mem::size_of::<R>()
+                }
+                size_of_return_value(&__stacklover_inner_unreachable)
+            };
+
+            #[doc(hidden)]
+            const __ALIGN: usize = {
+                const fn align_of_return_value<R>(_: &(impl ::core::ops::Fn() -> R)) -> usize {
+                    ::core::mem::align_of::<R>()
+                }
+                align_of_return_value(&__stacklover_inner_unreachable)
+            };
+
             #[inline(always)]
             pub fn as_ref(&self) -> &($inner_type) {
                 if true {
