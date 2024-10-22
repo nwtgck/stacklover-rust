@@ -8,6 +8,6 @@ edition = "2021"
 [dependencies]
 
 [dev-dependencies]
-tokio = { version = "1.38", features = ["rt", "macros", "time"] }
+tokio = { version = "1.41", features = ["rt", "macros", "time"] }
 futures = "0.3"
 auto_enums = "0.8"
