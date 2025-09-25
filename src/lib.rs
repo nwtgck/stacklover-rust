@@ -1,92 +1,16 @@
 #[macro_export]
 macro_rules! define_struct {
-    // not async create
-    (
-        $struct_name:ident,
-        $(#[$attrs:meta])*
-        fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
-        impls = ( $($derive_trait:ident),* $(,)? ) $(,)?
-    ) => {
-        $crate::define_struct!(
-            $struct_name,
-            $(#[$attrs])*
-            fn ( $( $param: $param_ty ),* ) -> $create_fn_return_type { $($create_fn_body)* },
-            impls = ( $($derive_trait),* ),
-            inner_type = $create_fn_return_type,
-            wrapped_type = __Inner__,
-            to_wrapped_struct = |created_value, inner_to_struct| { inner_to_struct(created_value) },
-        );
-    };
-    // not async create
-    (
-        $struct_name:ident,
-        $(#[$attrs:meta])*
-        fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
-        impls = ( $($derive_trait:ident),* $(,)? ),
-        inner_type = $inner_type:ty,
-        // wrapped_type should include __Inner__
-        wrapped_type = $wrapped_type:ty,
-        to_wrapped_struct = |$created_value:ident, $inner_to_struct_fn:ident| { $($to_wrapped_struct_body:tt)* } $(,)?
-    ) => {
-        $crate::__define_struct!($struct_name);
-
-        const _: () = {
-            type __StackloverWrappedType<__Inner__> = $wrapped_type;
-
-            // NOTE: prefix "__" is for avoiding name confliction. The function body should not use the function name because it will be accidentally a recursive function.
-            #[inline(always)]
-            $(#[$attrs])*
-            fn __stacklover_create( $($param: $param_ty ),* ) -> $create_fn_return_type {
-                $($create_fn_body)*
-            }
-
-            #[allow(unused)]
-            #[allow(unreachable_code)]
-            fn __stacklover_inner_unreachable() -> $inner_type {
-                let __stacklover_inner_to_struct_fn_unreachable = |inner| -> $struct_name { ::core::unreachable!() };
-                let _ = {
-                    let $created_value = __stacklover_create( $( $crate::__ident_to_unreachable!($param) ),* );
-                    let $inner_to_struct_fn = __stacklover_inner_to_struct_fn_unreachable;
-                    // For type inference of __stacklover_inner_to_struct_fn_unreachable
-                    $($to_wrapped_struct_body)*
-                };
-                fn __stacklover_fn_param_unreachable<T, R>(_: impl Fn(T) -> R) -> T {
-                    ::core::unreachable!()
-                }
-                __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
-            }
-
-            impl $struct_name {
-                #[inline(always)]
-                pub fn new( $( $param: $param_ty ),* ) -> __StackloverWrappedType<Self> {
-                    let __stacklover_inner_to_struct_fn = |inner| Self {
-                        __private_inner: unsafe {
-                            ::core::mem::transmute::<_, $crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>>(inner)
-                        },
-                    };
-                    {
-                        let $created_value = __stacklover_create( $($param),* );
-                        let $inner_to_struct_fn = __stacklover_inner_to_struct_fn;
-                        $($to_wrapped_struct_body)*
-                    }
-                }
-            }
-
-            $crate::__assert_and_as_ref_and_as_mut_and_into_inner_and_drop!($struct_name, $inner_type);
-            $crate::__impl_traits!($struct_name, $($derive_trait)*);
-        };
-    };
     // async create
     (
         $struct_name:ident,
         $(#[$attrs:meta])*
-        $async:ident fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
+        async fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
         impls = ( $($derive_trait:ident),* $(,)? ) $(,)?
     ) => {
         $crate::define_struct!(
             $struct_name,
             $(#[$attrs])*
-            $async fn ( $( $param: $param_ty ),* ) -> $create_fn_return_type { $($create_fn_body)* },
+            async fn ( $( $param: $param_ty ),* ) -> $create_fn_return_type { $($create_fn_body)* },
             impls = ( $($derive_trait),* ),
             inner_type = $create_fn_return_type,
             wrapped_type = __Inner__,
@@ -97,7 +21,7 @@ macro_rules! define_struct {
     (
         $struct_name:ident,
         $(#[$attrs:meta])*
-        $async:ident fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
+        async fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
         impls = ( $($derive_trait:ident),* $(,)? ),
         inner_type = $inner_type:ty,
         // wrapped_type should include __Inner__
@@ -111,7 +35,7 @@ macro_rules! define_struct {
 
             #[inline(always)]
             $(#[$attrs])*
-            $async fn __stacklover_create( $($param: $param_ty ),* ) -> $create_fn_return_type {
+            async fn __stacklover_create( $($param: $param_ty ),* ) -> $create_fn_return_type {
                 $($create_fn_body)*
             }
 
@@ -136,7 +60,7 @@ macro_rules! define_struct {
 
             impl $struct_name {
                 #[inline(always)]
-                pub $async fn new( $($param: $param_ty ),* ) -> __StackloverWrappedType<Self> {
+                pub async fn new( $($param: $param_ty ),* ) -> __StackloverWrappedType<Self> {
                     let __stacklover_inner_to_struct_fn = |inner| Self {
                         __private_inner: unsafe {
                             ::core::mem::transmute::<_, $crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>>(inner)
@@ -154,6 +78,170 @@ macro_rules! define_struct {
             $crate::__impl_traits!($struct_name, $($derive_trait)*);
         };
     };
+    // const create
+    (
+        $struct_name:ident,
+        $(#[$attrs:meta])*
+        const fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
+        impls = ( $($derive_trait:ident),* $(,)? ) $(,)?
+    ) => {
+        $crate::__define_maybe_const_struct!(
+            $struct_name,
+            $(#[$attrs])*
+            [const] fn ( $( $param: $param_ty ),* ) -> $create_fn_return_type { $($create_fn_body)* },
+            impls = ( $($derive_trait),* ),
+            inner_type = $create_fn_return_type,
+            wrapped_type = __Inner__,
+            to_wrapped_struct = |created_value, inner_to_struct| { inner_to_struct!(created_value) },
+        );
+    };
+    // const create
+    (
+        $struct_name:ident,
+        $(#[$attrs:meta])*
+        const fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
+        impls = ( $($derive_trait:ident),* $(,)? ),
+        inner_type = $inner_type:ty,
+        // wrapped_type should include __Inner__
+        wrapped_type = $wrapped_type:ty,
+        to_wrapped_struct = |$created_value:ident, $inner_to_struct_fn:ident| { $($to_wrapped_struct_body:tt)* } $(,)?
+    ) => {
+        $crate::__define_maybe_const_struct!(
+            $struct_name,
+            $(#[$attrs])*
+            [const] fn ( $( $param: $param_ty ),* ) -> $create_fn_return_type { $($create_fn_body)* },
+            impls = ( $($derive_trait),* ),
+            inner_type = $inner_type,
+            wrapped_type = $wrapped_type,
+            to_wrapped_struct = |$created_value, $inner_to_struct_fn| { $( $to_wrapped_struct_body )* },
+        );
+    };
+    // not async, not const create
+    (
+        $struct_name:ident,
+        $(#[$attrs:meta])*
+        fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
+        impls = ( $($derive_trait:ident),* $(,)? ) $(,)?
+    ) => {
+        $crate::__define_maybe_const_struct!(
+            $struct_name,
+            $(#[$attrs])*
+            [] fn ( $( $param: $param_ty ),* ) -> $create_fn_return_type { $($create_fn_body)* },
+            impls = ( $($derive_trait),* ),
+            inner_type = $create_fn_return_type,
+            wrapped_type = __Inner__,
+            to_wrapped_struct = |created_value, inner_to_struct| { inner_to_struct(created_value) },
+        );
+    };
+    // not async, not const create
+    (
+        $struct_name:ident,
+        $(#[$attrs:meta])*
+        fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
+        impls = ( $($derive_trait:ident),* $(,)? ),
+        inner_type = $inner_type:ty,
+        // wrapped_type should include __Inner__
+        wrapped_type = $wrapped_type:ty,
+        to_wrapped_struct = |$created_value:ident, $inner_to_struct_fn:ident| { $($to_wrapped_struct_body:tt)* } $(,)?
+    ) => {
+        $crate::__define_maybe_const_struct!(
+            $struct_name,
+            $(#[$attrs])*
+            [] fn ( $( $param: $param_ty ),* ) -> $create_fn_return_type { $($create_fn_body)* },
+            impls = ( $($derive_trait),* ),
+            inner_type = $inner_type,
+            wrapped_type = $wrapped_type,
+            to_wrapped_struct = |$created_value, $inner_to_struct_fn| { $( $to_wrapped_struct_body )* },
+        );
+    };
+}
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __define_maybe_const_struct {
+    (
+        $struct_name:ident,
+        $(#[$attrs:meta])*
+        [$($cst:ident)?] fn ( $( $param:ident: $param_ty:ty ),* ) -> $create_fn_return_type:ty { $($create_fn_body:tt)* },
+        impls = ( $($derive_trait:ident),* $(,)? ),
+        inner_type = $inner_type:ty,
+        // wrapped_type should include __Inner__
+        wrapped_type = $wrapped_type:ty,
+        to_wrapped_struct = |$created_value:ident, $inner_to_struct_fn:ident| { $($to_wrapped_struct_body:tt)* },
+    ) => {
+        $crate::__define_struct!($struct_name);
+
+        const _: () = {
+            type __StackloverWrappedType<__Inner__> = $wrapped_type;
+
+            // NOTE: prefix "__" is for avoiding name confliction. The function body should not use the function name because it will be accidentally a recursive function.
+            #[inline(always)]
+            $(#[$attrs])*
+            $($cst)? fn __stacklover_create( $($param: $param_ty ),* ) -> $create_fn_return_type {
+                $($create_fn_body)*
+            }
+
+            #[allow(unused)]
+            #[allow(unreachable_code)]
+            fn __stacklover_inner_unreachable() -> $inner_type {
+                let __stacklover_inner_to_struct_fn_unreachable = |inner| -> $struct_name { ::core::unreachable!() };
+                macro_rules! $inner_to_struct_fn { ($inner:expr) => { __stacklover_inner_to_struct_fn_unreachable($inner) }; }
+                let _ = if false {
+                    let $created_value = __stacklover_create( $( $crate::__ident_to_unreachable!($param) ),* );
+                    let $inner_to_struct_fn = __stacklover_inner_to_struct_fn_unreachable;
+                    // For type inference of __stacklover_inner_to_struct_fn_unreachable
+                    $($to_wrapped_struct_body)*
+                } else {
+                    ::core::unreachable!()
+                };
+                const fn __stacklover_fn_param_unreachable<T, R>(_: impl Fn(T) -> R) -> T {
+                    ::core::unreachable!()
+                }
+                __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
+            }
+
+            const fn unambiguate_argument<T, R>(f: &impl FnOnce(T) -> R, r: &T) {}
+            impl $struct_name {
+                #[inline(always)]
+                pub $($cst)? fn new( $( $param: $param_ty ),* ) -> __StackloverWrappedType<Self> {
+                    macro_rules! __stacklover_inner_to_struct_fn {
+                        ($inner:expr) => {
+                            $struct_name {
+                                __private_inner: unsafe {
+                                    ::core::mem::transmute::<_, $crate::__private_mod::ErasedStorage<{ $struct_name::__SIZE }, { $struct_name::__ALIGN }>>($inner)
+                                },
+                            }
+                        };
+                    }
+                    let __stacklover_inner_to_struct_fn = |inner| __stacklover_inner_to_struct_fn!(inner);
+                    let $inner_to_struct_fn = __stacklover_inner_to_struct_fn;
+                    // We can not call closures in const context, hence we can't simply call $inner_to_struct_fn.
+                    // At the same time, __stacklover_inner_unreachable (above) must NOT contain MIR code naming __SIZE, which
+                    // would lead to a cycle between assembling __stacklover_inner_unreachable and computing __SIZE
+                    // (the compiler is not smart enough to understand that __stacklover_inner_unreachable is never evaluated,
+                    //  it still wants to assemble it).
+                    // Hence, we have two different wrappers here, one calling the closure (above), and one creating the value
+                    // "by hand", and allow the caller to use the macro as an alternative in const contexts.
+                    #[allow(unused)]
+                    macro_rules! $inner_to_struct_fn {
+                        ($inner:expr) => {__stacklover_inner_to_struct_fn!({
+                            let __created_value = { $inner };
+                            let _ = || unambiguate_argument(&__stacklover_inner_to_struct_fn, &__created_value);
+                            __created_value
+                        })};
+                    }
+                    {
+                        let $created_value = __stacklover_create( $($param),* );
+                        $($to_wrapped_struct_body)*
+                    }
+                }
+            }
+
+            $crate::__assert_and_as_ref_and_as_mut_and_into_inner_and_drop!($struct_name, $inner_type);
+            $crate::__impl_traits!($struct_name, $($derive_trait)*);
+        };
+    };
+
 }
 
 #[doc(hidden)]
@@ -344,6 +432,7 @@ macro_rules! __impl_traits {
                 ::core::cmp::PartialEq::eq($struct_name::as_ref(self), $struct_name::as_ref(other))
             }
 
+            #[allow(clippy::partialeq_ne_impl)] // Forwarding to the inner type still seems like the correct thing to do
             fn ne(&self, other: &Self) -> bool {
                 ::core::cmp::PartialEq::ne($struct_name::as_ref(self), $struct_name::as_ref(other))
             }

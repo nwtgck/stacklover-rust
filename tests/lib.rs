@@ -588,3 +588,46 @@ async fn it_works_with_async_auto_enum_attribute() {
 const fn size_of_val<T>(_: &T) -> usize {
     size_of::<T>()
 }
+
+#[test]
+fn it_works_with_const() {
+    #[derive(PartialEq, Eq, Debug)]
+    struct HiddenImpl(u64);
+
+    stacklover::define_struct! {
+        ConstConstructible,
+        const fn (a: u64) -> impl Eq + Debug {
+            HiddenImpl(a)
+        },
+        impls = (PartialEq, Eq, Debug),
+    }
+    const FOO: ConstConstructible = ConstConstructible::new(42);
+    assert_eq!(FOO, FOO);
+}
+
+// TODO: This *almost* works, but the compiler is not smart enough to eliminate the drop call of the Result<impl _, _>
+// which it then is unable to perform, so const and wrapping is currently not actually possible :/
+// fn it_works_with_deriving_traits_and_const_wrap_params() {
+//     use std::io::Error;
+//     stacklover::define_struct! {
+//         Tuple1,
+//         const fn (dep1: &'static str, dep2: i32) -> Result<impl PartialEq + Eq + Debug, Error> {
+//             Ok(create(dep1, dep2))
+//         },
+//         impls = ( PartialEq, Eq, Debug ),
+//         inner_type = impl PartialEq + Eq + Debug,
+//         wrapped_type = Result<__Inner__, Error>,
+//         to_wrapped_struct = |result, inner_to_struct| { match result {
+//             Ok(ok) => Ok( inner_to_struct!(ok) ),
+//             Err(err) => Err(err),
+//         } },
+//     }
+//     const fn create(dep1: &'static str, dep2: i32) -> impl PartialEq + Eq + Debug {
+//         (dep1, dep2, false)
+//     }
+//     let result: Result<Tuple1, Error> = Tuple1::new("hello", 100);
+//     let x: Tuple1 = result.unwrap();
+//     let bare = create("hello", 100);
+//     assert_eq!(format!("{:?}", x), format!("{:?}", bare));
+//     assert_eq!(x, x);
+// }
