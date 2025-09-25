@@ -1,15 +1,13 @@
 #![feature(prelude_import)]
-#[prelude_import]
-use std::prelude::rust_2021::*;
 #[macro_use]
 extern crate std;
+#[prelude_import]
+use std::prelude::rust_2021::*;
 #[repr(transparent)]
 struct Iterator1 {
     #[doc(hidden)]
-    __private_inner: ::stacklover::__private_mod::ErasedStorage<
-        { Iterator1::__SIZE },
-        { Iterator1::__ALIGN },
-    >,
+    __private_inner:
+        ::stacklover::__private_mod::ErasedStorage<{ Iterator1::__SIZE }, { Iterator1::__ALIGN }>,
 }
 const _: () = {
     type __StackloverWrappedType<__Inner__> = __Inner__;
@@ -27,22 +25,19 @@ const _: () = {
     #[allow(unused)]
     #[allow(unreachable_code)]
     fn __stacklover_inner_unreachable() -> impl Iterator<Item = i32> + Clone {
-        fn __stacklover_await_future_unreachable<
-            T: ::core::future::Future<Output = O>,
-            O,
-        >(_: T) -> O {
+        fn __stacklover_await_future_unreachable<T: ::core::future::Future<Output = O>, O>(
+            _: T,
+        ) -> O {
             ::core::panicking::panic("internal error: entered unreachable code")
         }
         let __stacklover_inner_to_struct_fn_unreachable = |inner| -> Iterator1 {
             ::core::panicking::panic("internal error: entered unreachable code")
         };
         let _ = {
-            let created_value = __stacklover_await_future_unreachable(
-                __stacklover_create(
-                    ::core::panicking::panic("internal error: entered unreachable code"),
-                    ::core::panicking::panic("internal error: entered unreachable code"),
-                ),
-            );
+            let created_value = __stacklover_await_future_unreachable(__stacklover_create(
+                ::core::panicking::panic("internal error: entered unreachable code"),
+                ::core::panicking::panic("internal error: entered unreachable code"),
+            ));
             let inner_to_struct = __stacklover_inner_to_struct_fn_unreachable;
             inner_to_struct(created_value)
         };
@@ -53,10 +48,7 @@ const _: () = {
     }
     impl Iterator1 {
         #[inline(always)]
-        pub async fn new(
-            dep1: &'static str,
-            dep2: i32,
-        ) -> __StackloverWrappedType<Self> {
+        pub async fn new(dep1: &'static str, dep2: i32) -> __StackloverWrappedType<Self> {
             let __stacklover_inner_to_struct_fn = |inner| Self {
                 __private_inner: unsafe {
                     ::core::mem::transmute::<
@@ -76,16 +68,22 @@ const _: () = {
         }
     }
     const _: () = {
-        if !(::core::mem::size_of::<Iterator1>() == Iterator1::__SIZE) {
-            {
-                ::core::panicking::panic_fmt(format_args!("invalid size"));
+        {
+            match ::core::mem::size_of::<Iterator1>() == Iterator1::__SIZE {
+                true => {}
+                _ => {
+                    ::core::panicking::panic_fmt(format_args!("invalid size"));
+                }
             }
-        }
-        if !(::core::mem::align_of::<Iterator1>() == Iterator1::__ALIGN) {
-            {
-                ::core::panicking::panic_fmt(format_args!("invalid align"));
+        };
+        {
+            match ::core::mem::align_of::<Iterator1>() == Iterator1::__ALIGN {
+                true => {}
+                _ => {
+                    ::core::panicking::panic_fmt(format_args!("invalid align"));
+                }
             }
-        }
+        };
     };
     const _: fn() = || {
         fn assert_static<T: 'static>(_: T) {}
@@ -94,18 +92,14 @@ const _: () = {
     impl Iterator1 {
         #[doc(hidden)]
         const __SIZE: usize = {
-            const fn size_of_return_value<R>(
-                _: &(impl ::core::ops::Fn() -> R),
-            ) -> usize {
+            const fn size_of_return_value<R>(_: &(impl ::core::ops::Fn() -> R)) -> usize {
                 ::core::mem::size_of::<R>()
             }
             size_of_return_value(&__stacklover_inner_unreachable)
         };
         #[doc(hidden)]
         const __ALIGN: usize = {
-            const fn align_of_return_value<R>(
-                _: &(impl ::core::ops::Fn() -> R),
-            ) -> usize {
+            const fn align_of_return_value<R>(_: &(impl ::core::ops::Fn() -> R)) -> usize {
                 ::core::mem::align_of::<R>()
             }
             align_of_return_value(&__stacklover_inner_unreachable)
@@ -155,7 +149,8 @@ const _: () = {
             if true {
                 unsafe { ::core::mem::transmute(self) }
             } else {
-                #[allow(unreachable_code)] __stacklover_inner_unreachable()
+                #[allow(unreachable_code)]
+                __stacklover_inner_unreachable()
             }
         }
         #[inline(always)]
