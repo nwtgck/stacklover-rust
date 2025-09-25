@@ -186,13 +186,11 @@ macro_rules! __define_maybe_const_struct {
             fn __stacklover_inner_unreachable() -> $inner_type {
                 let __stacklover_inner_to_struct_fn_unreachable = |inner| -> $struct_name { ::core::unreachable!() };
                 macro_rules! $inner_to_struct_fn { ($inner:expr) => { __stacklover_inner_to_struct_fn_unreachable($inner) }; }
-                let _ = if false {
+                let _ = {
                     let $created_value = __stacklover_create( $( $crate::__ident_to_unreachable!($param) ),* );
                     let $inner_to_struct_fn = __stacklover_inner_to_struct_fn_unreachable;
                     // For type inference of __stacklover_inner_to_struct_fn_unreachable
                     $($to_wrapped_struct_body)*
-                } else {
-                    ::core::unreachable!()
                 };
                 const fn __stacklover_fn_param_unreachable<T, R>(_: impl Fn(T) -> R) -> T {
                     ::core::unreachable!()
@@ -200,7 +198,7 @@ macro_rules! __define_maybe_const_struct {
                 __stacklover_fn_param_unreachable(__stacklover_inner_to_struct_fn_unreachable)
             }
 
-            const fn unambiguate_argument<T, R>(f: &impl FnOnce(T) -> R, r: &T) {}
+            $( $crate::__expand_ident_as!($cst, const fn unambiguate_argument<T, R>(f: &impl FnOnce(T) -> R, r: &T) {}); )?
             impl $struct_name {
                 #[inline(always)]
                 pub $($cst)? fn new( $( $param: $param_ty ),* ) -> __StackloverWrappedType<Self> {
@@ -228,7 +226,7 @@ macro_rules! __define_maybe_const_struct {
                         macro_rules! $inner_to_struct_fn {
                             ($inner:expr) => {__stacklover_inner_to_struct_fn!({
                                 let __created_value = { $inner };
-                                let _ = || unambiguate_argument(&__stacklover_inner_to_struct_fn, &__created_value);
+                                let _ = unambiguate_argument(&__stacklover_inner_to_struct_fn, &__created_value);
                                 __created_value
                             })};
                         }
