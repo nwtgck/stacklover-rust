@@ -222,14 +222,17 @@ macro_rules! __define_maybe_const_struct {
                     //  it still wants to assemble it).
                     // Hence, we have two different wrappers here, one calling the closure (above), and one creating the value
                     // "by hand", and allow the caller to use the macro as an alternative in const contexts.
-                    #[allow(unused)]
-                    macro_rules! $inner_to_struct_fn {
-                        ($inner:expr) => {__stacklover_inner_to_struct_fn!({
-                            let __created_value = { $inner };
-                            let _ = || unambiguate_argument(&__stacklover_inner_to_struct_fn, &__created_value);
-                            __created_value
-                        })};
-                    }
+                    // Anyway, only provide this macro if we are really expanding in const context.
+                    $($crate::__expand_ident_as!($cst,
+                        #[allow(unused)]
+                        macro_rules! $inner_to_struct_fn {
+                            ($inner:expr) => {__stacklover_inner_to_struct_fn!({
+                                let __created_value = { $inner };
+                                let _ = || unambiguate_argument(&__stacklover_inner_to_struct_fn, &__created_value);
+                                __created_value
+                            })};
+                        }
+                    );)?
                     {
                         let $created_value = __stacklover_create( $($param),* );
                         $($to_wrapped_struct_body)*
@@ -246,9 +249,16 @@ macro_rules! __define_maybe_const_struct {
 
 #[doc(hidden)]
 #[macro_export]
+macro_rules! __expand_ident_as {
+    ( $x:ident, $( $toks:tt )* ) => {
+        $( $toks )*
+    }
+}
+#[doc(hidden)]
+#[macro_export]
 macro_rules! __ident_to_unreachable {
     ( $x:ident ) => {
-        ::core::unreachable!()
+        $crate::__expand_ident_as!($x, ::core::unreachable!())
     };
 }
 
